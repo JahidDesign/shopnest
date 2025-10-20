@@ -33,15 +33,10 @@ import AdminCamerasManage from "../pages/cameras/AdminCamerasManage";
 // ---------------- Admin Pages ----------------
 const AdminLayout = lazy(() => import("../components/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("../pages/admin/Dashboard"));
-const ManageProducts = lazy(() => import("../pages/admin/ManageProducts"));
-const ManageUsers = lazy(() => import("../pages/admin/ManageUsers"));
 const HeroManageSection = lazy(() => import("../pages/admin/ManageSection/HeroManageSection"));
 const ProductsManageTable = lazy(() => import("../pages/admin/ManageSection/ProductsManageTable"));
 const ProductsFormManage = lazy(() => import("../pages/admin/form/ProductsFormManage"));
 const HeroSection = lazy(() => import("../pages/admin/form/HeroSection"));
-const ManageOrders = lazy(() => import("../pages/admin/ManageOrders"));
-const ManageCategories = lazy(() => import("../pages/admin/ManageCategories"));
-const ManageCoupons = lazy(() => import("../pages/admin/ManageCoupons"));
 const SiteSettings = lazy(() => import("../pages/admin/SiteSettings"));
 const FeatureAdminForm = lazy(() => import("../pages/FeatureProducts/FeatureAdminForm"));
 const FeatureAdminTable = lazy(() => import("../pages/FeatureProducts/FeatureAdminTable"));
@@ -80,11 +75,6 @@ function AppRoutes() {
         <Route path="hero-section/add" element={<HeroSection />} />
          <Route path="products-section/edit" element={<ProductsManageTable />} />
         <Route path="products-section/add" element={<ProductsFormManage />} />
-        <Route path="products" element={<ManageProducts />} />
-        <Route path="users" element={<ManageUsers />} />
-        <Route path="orders" element={<ManageOrders />} />
-        <Route path="categories" element={<ManageCategories />} />
-        <Route path="coupons" element={<ManageCoupons />} />
         <Route path="settings" element={<SiteSettings />} />
         <Route path="products-feature/edit" element={<FeatureAdminTable />} />
         <Route path="products-feature/add" element={<FeatureAdminForm />} />
