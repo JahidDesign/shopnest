@@ -40,7 +40,6 @@ const ProductsManageTable = lazy(() => import("../pages/admin/ManageSection/Prod
 const ProductsFormManage = lazy(() => import("../pages/admin/form/ProductsFormManage"));
 const HeroSection = lazy(() => import("../pages/admin/form/HeroSection"));
 const ManageOrders = lazy(() => import("../pages/admin/ManageOrders"));
-const ManageReviews = lazy(() => import("../pages/admin/ManageReviews"));
 const ManageCategories = lazy(() => import("../pages/admin/ManageCategories"));
 const ManageCoupons = lazy(() => import("../pages/admin/ManageCoupons"));
 const SiteSettings = lazy(() => import("../pages/admin/SiteSettings"));
@@ -84,7 +83,6 @@ function AppRoutes() {
         <Route path="products" element={<ManageProducts />} />
         <Route path="users" element={<ManageUsers />} />
         <Route path="orders" element={<ManageOrders />} />
-        <Route path="reviews" element={<ManageReviews />} />
         <Route path="categories" element={<ManageCategories />} />
         <Route path="coupons" element={<ManageCoupons />} />
         <Route path="settings" element={<SiteSettings />} />
