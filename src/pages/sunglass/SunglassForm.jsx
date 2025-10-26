@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 
-const API_BASE = "https://shopnest-ecom.onrender.com"; // ✅ Base URL variable
+const API_BASE = "https://shopnest-ecom.onrender.com"; // Base URL
 
 const SunglassForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     sku: "",
     brand: "",
-    category: "",
+    category: "Sunglasses",
     subcategory: "",
     price: "",
     hasDiscount: false,
@@ -101,7 +101,7 @@ const SunglassForm = () => {
 
         // Reset form
         setFormData({
-          name: "", sku: "", brand: "", category: "", subcategory: "", price: "",
+          name: "", sku: "", brand: "", category: "Sunglasses", subcategory: "", price: "",
           hasDiscount: false, discountPrice: "", discountStart: "", discountEnd: "",
           stock: "", status: "published", featured: false, weight: "", dimensions: "",
           description: "", images: [], tags: [], variants: [], metaTitle: "",
@@ -127,74 +127,133 @@ const SunglassForm = () => {
       </div>
 
       <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
-        {/* 🟠 Example Input Fields */}
-        <div>
-          <label className="block font-semibold text-gray-700">Product Name</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full border rounded-md px-3 py-2 mt-1"
-            placeholder="Enter product name"
-          />
-        </div>
 
-        <div>
-          <label className="block font-semibold text-gray-700">Category</label>
-          <input
-            type="text"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full border rounded-md px-3 py-2 mt-1"
-            placeholder="e.g. Men’s Sunglasses"
-          />
-        </div>
+        {/* Product Info */}
+        <input type="text" name="name" placeholder="Product Name *" value={formData.name} onChange={handleChange} className="border p-2 rounded"/>
+        <input type="text" name="brand" placeholder="Brand" value={formData.brand} onChange={handleChange} className="border p-2 rounded"/>
+        <input type="text" name="subcategory" placeholder="Subcategory" value={formData.subcategory} onChange={handleChange} className="border p-2 rounded"/>
+        <input type="number" name="price" placeholder="Price ($) *" value={formData.price} onChange={handleChange} className="border p-2 rounded"/>
+        <input type="number" name="stock" placeholder="Stock Quantity" value={formData.stock} onChange={handleChange} className="border p-2 rounded"/>
+        <input type="text" name="weight" placeholder="Weight (kg)" value={formData.weight} onChange={handleChange} className="border p-2 rounded"/>
+        <input type="text" name="dimensions" placeholder="Dimensions (L x W x H)" value={formData.dimensions} onChange={handleChange} className="border p-2 rounded"/>
 
-        <div>
-          <label className="block font-semibold text-gray-700">Price ($)</label>
-          <input
-            type="number"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            className="w-full border rounded-md px-3 py-2 mt-1"
-          />
+        {/* Discount */}
+        <div className="flex items-center gap-2">
+          <input type="checkbox" name="hasDiscount" checked={formData.hasDiscount} onChange={handleChange}/>
+          <span>Apply Discount</span>
         </div>
-
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            name="hasDiscount"
-            checked={formData.hasDiscount}
-            onChange={handleChange}
-          />
-          <label className="font-semibold text-gray-700">Has Discount?</label>
-        </div>
-
         {formData.hasDiscount && (
-          <div>
-            <label className="block font-semibold text-gray-700">Discount Price</label>
-            <input
-              type="number"
-              name="discountPrice"
-              value={formData.discountPrice}
-              onChange={handleChange}
-              className="w-full border rounded-md px-3 py-2 mt-1"
-            />
-          </div>
+          <>
+            <input type="number" name="discountPrice" placeholder="Discount Price" value={formData.discountPrice} onChange={handleChange} className="border p-2 rounded"/>
+            <input type="date" name="discountStart" value={formData.discountStart} onChange={handleChange} className="border p-2 rounded"/>
+            <input type="date" name="discountEnd" value={formData.discountEnd} onChange={handleChange} className="border p-2 rounded"/>
+          </>
         )}
 
-        {/* Submit Button */}
-        <div className="col-span-2 text-center mt-6">
-          <button
-            type="submit"
-            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded-md transition"
-          >
-            Add Product
-          </button>
+        {/* Featured & Status */}
+        <div className="flex items-center gap-2">
+          <input type="checkbox" name="featured" checked={formData.featured} onChange={handleChange}/>
+          <span>Featured Product</span>
         </div>
+        <select name="status" value={formData.status} onChange={handleChange} className="border p-2 rounded">
+          <option value="published">Published</option>
+          <option value="draft">Draft</option>
+          <option value="hidden">Hidden</option>
+        </select>
+
+        {/* Description */}
+        <textarea name="description" placeholder="Product Description" value={formData.description} onChange={handleChange} rows="4" className="border p-2 rounded md:col-span-2"/>
+
+        {/* Images */}
+        <div className="md:col-span-2">
+          <h4 className="font-semibold mb-2 text-gray-700">Product Images *</h4>
+          <div className="flex gap-2 mb-2">
+            <input type="text" placeholder="Image URL" value={imageInput} onChange={(e) => setImageInput(e.target.value)} className="border p-2 rounded flex-1"/>
+            <button type="button" onClick={handleAddImage} className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">Add Image</button>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+            {formData.images.map((img,i) => (
+              <div key={i} className="relative group">
+                <img src={img} alt={`Product ${i+1}`} className="h-32 w-full object-cover rounded border"/>
+                <button type="button" onClick={() => handleRemoveImage(i)} className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-7 h-7 rounded-full flex justify-center items-center opacity-0 group-hover:opacity-100 transition">×</button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Variants */}
+        <div className="md:col-span-2">
+          <h4 className="font-semibold mb-2 text-gray-700">Product Variants</h4>
+          <div className="flex gap-2 mb-2 flex-wrap">
+            <input type="text" placeholder="Color" value={variantInput.color} onChange={(e) => setVariantInput({...variantInput, color:e.target.value})} className="border p-2 rounded flex-1 min-w-[100px]"/>
+            
+            {/* Dropdown with real sunglass sizes */}
+            <select value={variantInput.size} onChange={(e) => setVariantInput({...variantInput, size:e.target.value})} className="border p-2 rounded flex-1 min-w-[120px]">
+              <option value="">Select Size</option>
+              <option value="50-20-140">50-20-140</option>
+              <option value="52-18-145">52-18-145</option>
+              <option value="54-18-145">54-18-145</option>
+              <option value="56-20-150">56-20-150</option>
+            </select>
+
+            <input type="number" placeholder="Price" value={variantInput.price} onChange={(e) => setVariantInput({...variantInput, price:e.target.value})} className="border p-2 rounded flex-1 min-w-[100px]"/>
+            <input type="number" placeholder="Stock" value={variantInput.stock} onChange={(e) => setVariantInput({...variantInput, stock:e.target.value})} className="border p-2 rounded flex-1 min-w-[100px]"/>
+            <button type="button" onClick={handleAddVariant} className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">Add</button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {formData.variants.map((v,i) => (
+              <div key={i} className="bg-orange-100 px-3 py-2 rounded flex gap-2 items-center">
+                <span className="text-sm">{v.color}/{v.size} - ${v.price} (Stock: {v.stock})</span>
+                <button type="button" onClick={() => handleRemoveVariant(i)} className="text-red-500 hover:text-red-700 font-bold text-lg">×</button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Tags */}
+        <div className="md:col-span-2">
+          <h4 className="font-semibold mb-2 text-gray-700">Tags</h4>
+          <div className="flex gap-2 mb-2">
+            <input type="text" placeholder="Add tag" value={tagInput} onChange={(e) => setTagInput(e.target.value)} onKeyPress={(e) => {if(e.key==="Enter"){e.preventDefault();handleAddTag();}}} className="border p-2 rounded flex-1"/>
+            <button type="button" onClick={handleAddTag} className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">Add Tag</button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {formData.tags.map((t,i) => (
+              <div key={i} className="bg-orange-100 px-3 py-1 rounded flex gap-2 items-center">
+                <span className="text-sm">{t}</span>
+                <button type="button" onClick={() => handleRemoveTag(i)} className="text-red-500 hover:text-red-700 font-bold">×</button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Star Rating */}
+        <div className="md:col-span-2">
+          <h4 className="font-semibold mb-2 text-gray-700">Rating</h4>
+          <div className="flex items-center gap-1 text-xl">
+            {[1,2,3,4,5].map((star) => (
+              <button
+                key={star}
+                type="button"
+                className={`transition text-2xl ${star <= (hoverRating || formData.rating) ? "text-yellow-400" : "text-gray-300"}`}
+                onClick={() => setFormData(prev => ({ ...prev, rating: star }))}
+                onMouseEnter={() => setHoverRating(star)}
+                onMouseLeave={() => setHoverRating(0)}
+              >
+                ★
+              </button>
+            ))}
+            <span className="ml-2 text-sm text-gray-600">{formData.rating} / 5</span>
+          </div>
+        </div>
+
+        {/* SEO */}
+        <input type="text" name="metaTitle" placeholder="Meta Title" value={formData.metaTitle} onChange={handleChange} className="border p-2 rounded md:col-span-2"/>
+        <textarea name="metaDescription" placeholder="Meta Description" value={formData.metaDescription} onChange={handleChange} rows="2" className="border p-2 rounded md:col-span-2"/>
+        <input type="text" name="metaKeywords" placeholder="Meta Keywords (comma separated)" value={formData.metaKeywords} onChange={handleChange} className="border p-2 rounded md:col-span-2"/>
+
+        {/* Submit */}
+        <button type="submit" className="md:col-span-2 py-3 mt-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg">Add Product</button>
       </form>
     </div>
   );

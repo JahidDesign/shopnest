@@ -6,7 +6,7 @@ const CamerasForm = () => {
     name: "",
     sku: "",
     brand: "",
-    category: "",
+    category: "Cameras", // Locked category
     subcategory: "",
     price: "",
     hasDiscount: false,
@@ -37,7 +37,7 @@ const CamerasForm = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // Fetch all existing products for suggestions
+  // Fetch existing camera products for suggestions
   useEffect(() => {
     fetch("https://shopnest-ecom.onrender.com/cameras")
       .then((res) => res.json())
@@ -67,7 +67,7 @@ const CamerasForm = () => {
 
   // Select suggestion to auto-fill
   const handleSelectSuggestion = (product) => {
-    setFormData({ ...product });
+    setFormData({ ...product, category: "Cameras" }); // Ensure category stays locked
     setHoverRating(product.rating || 0);
     setSuggestions([]);
     setShowSuggestions(false);
@@ -108,7 +108,7 @@ const CamerasForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.category || !formData.price || formData.images.length === 0) {
+    if (!formData.name || !formData.subcategory || !formData.price || formData.images.length === 0) {
       Swal.fire("Missing Fields", "Please fill required fields and add at least one image.", "warning");
       return;
     }
@@ -129,9 +129,10 @@ const CamerasForm = () => {
       const data = await res.json();
 
       if (res.ok) {
-        Swal.fire("Success", "Product added successfully!", "success");
+        Swal.fire("Success", "Camera product added successfully!", "success");
+        // Reset form
         setFormData({
-          name: "", sku: "", brand: "", category: "", subcategory: "", price: "",
+          name: "", sku: "", brand: "", category: "Cameras", subcategory: "", price: "",
           hasDiscount: false, discountPrice: "", discountStart: "", discountEnd: "",
           stock: "", status: "published", featured: false, weight: "", dimensions: "",
           description: "", images: [], tags: [], variants: [], metaTitle: "",
@@ -154,15 +155,15 @@ const CamerasForm = () => {
 
   return (
     <div className="max-w-7xl mx-auto mt-8 bg-white shadow-lg p-6 rounded-lg relative">
-      <div className="text-2xl font-bold text-orange-600 mb-6 text-center">Cameras New Product</div>
+      <div className="text-2xl font-bold text-orange-600 mb-6 text-center">Add New Camera</div>
       <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
         
-        {/* Product Name with suggestions */}
+        {/* Product Name */}
         <div className="relative md:col-span-2">
           <input
             type="text"
             name="name"
-            placeholder="Product Name *"
+            placeholder="Camera Name *"
             value={formData.name}
             onChange={handleChange}
             className="border p-2 rounded w-full focus:ring-2 focus:ring-orange-500 outline-none"
@@ -183,17 +184,26 @@ const CamerasForm = () => {
           )}
         </div>
 
-        {/* Product Info */}
+        {/* SKU, Brand */}
         <input type="text" name="sku" placeholder="SKU / Code" value={formData.sku} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
         <input type="text" name="brand" placeholder="Brand" value={formData.brand} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
-        <select name="category" value={formData.category} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none">
-          <option value="">Category *</option>
-          <option value="Electronics">Electronics</option>
-          <option value="Fashion">Fashion</option>
-          <option value="Home">Home & Garden</option>
-          <option value="Sports">Sports</option>
+
+        {/* Subcategory */}
+        <select
+          name="subcategory"
+          value={formData.subcategory}
+          onChange={handleChange}
+          className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"
+        >
+          <option value="">Select Camera Type *</option>
+          <option value="DSLR">DSLR</option>
+          <option value="Mirrorless">Mirrorless</option>
+          <option value="Action Camera">Action Camera</option>
+          <option value="Drone Camera">Drone Camera</option>
+          <option value="Security Camera">Security Camera</option>
         </select>
-        <input type="text" name="subcategory" placeholder="Subcategory" value={formData.subcategory} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
+
+        {/* Price & Stock */}
         <input type="number" name="price" placeholder="Price (৳) *" value={formData.price} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
         <input type="number" name="stock" placeholder="Stock Quantity" value={formData.stock} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
         <input type="text" name="weight" placeholder="Weight (kg)" value={formData.weight} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
@@ -222,10 +232,8 @@ const CamerasForm = () => {
           <option value="hidden">Hidden</option>
         </select>
 
-        {/* Description */}
-        <textarea name="description" placeholder="Product Description" value={formData.description} onChange={handleChange} rows="4" className="border p-2 rounded md:col-span-2 focus:ring-2 focus:ring-orange-500 outline-none"/>
-
-        {/* Dimensions */}
+        {/* Description & Dimensions */}
+        <textarea name="description" placeholder="Camera Description" value={formData.description} onChange={handleChange} rows="4" className="border p-2 rounded md:col-span-2 focus:ring-2 focus:ring-orange-500 outline-none"/>
         <input type="text" name="dimensions" placeholder="Dimensions (L x W x H)" value={formData.dimensions} onChange={handleChange} className="border p-2 rounded md:col-span-2 focus:ring-2 focus:ring-orange-500 outline-none"/>
 
         {/* Images */}
@@ -238,7 +246,7 @@ const CamerasForm = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
             {formData.images.map((img,i) => (
               <div key={i} className="relative group">
-                <img src={img} alt={`Product ${i+1}`} className="h-32 w-full object-cover rounded border"/>
+                <img src={img} alt={`Camera ${i+1}`} className="h-32 w-full object-cover rounded border"/>
                 <button type="button" onClick={() => handleRemoveImage(i)} className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-7 h-7 rounded-full flex justify-center items-center opacity-0 group-hover:opacity-100 transition">×</button>
               </div>
             ))}
@@ -247,7 +255,7 @@ const CamerasForm = () => {
 
         {/* Variants */}
         <div className="md:col-span-2">
-          <h4 className="font-semibold mb-2 text-gray-700">Product Variants</h4>
+          <h4 className="font-semibold mb-2 text-gray-700">Camera Variants</h4>
           <div className="flex gap-2 mb-2 flex-wrap">
             <input type="text" placeholder="Color" value={variantInput.color} onChange={(e) => setVariantInput({...variantInput, color:e.target.value})} className="border p-2 rounded flex-1 min-w-[100px]"/>
             <input type="text" placeholder="Size" value={variantInput.size} onChange={(e) => setVariantInput({...variantInput, size:e.target.value})} className="border p-2 rounded flex-1 min-w-[100px]"/>
@@ -282,7 +290,7 @@ const CamerasForm = () => {
           </div>
         </div>
 
-        {/* Star Rating */}
+        {/* Rating */}
         <div className="md:col-span-2">
           <h4 className="font-semibold mb-2 text-gray-700">Rating</h4>
           <div className="flex items-center gap-1 text-xl">
@@ -309,7 +317,7 @@ const CamerasForm = () => {
 
         {/* Submit */}
         <button type="submit" className="md:col-span-2 py-3 mt-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-lg transition transform hover:scale-[1.02] active:scale-[0.98]">
-          Add Product
+          Add Camera
         </button>
       </form>
     </div>

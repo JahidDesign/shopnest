@@ -11,6 +11,18 @@ const collections = [
   "glosoryproducts",
 ];
 
+// Predefined categories for dropdown
+const categories = [
+  "Electronics",
+  "Fashion",
+  "Home & Kitchen",
+  "Health & Beauty",
+  "Sports & Fitness",
+  "Groceries",
+  "Accessories",
+  "Others",
+];
+
 const FeatureFormProAdvanced = () => {
   const [collection, setCollection] = useState("");
   const [formData, setFormData] = useState({
@@ -19,7 +31,9 @@ const FeatureFormProAdvanced = () => {
     brand: "",
     category: "",
     subcategory: "",
+    description: "",
     price: "",
+    discountPrice: "",
     stock: "",
     images: [],
     tags: [],
@@ -29,38 +43,53 @@ const FeatureFormProAdvanced = () => {
 
   const [imageInput, setImageInput] = useState("");
   const [tagInput, setTagInput] = useState("");
-  const [variantInput, setVariantInput] = useState({ color: "", size: "", price: "", stock: "" });
+  const [variantInput, setVariantInput] = useState({
+    color: "",
+    size: "",
+    price: "",
+    stock: "",
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Images
+  // Add Image
   const handleAddImage = () => {
     if (!imageInput.trim()) return;
-    setFormData((prev) => ({ ...prev, images: [...prev.images, imageInput] }));
+    setFormData((prev) => ({
+      ...prev,
+      images: [...prev.images, imageInput],
+    }));
     setImageInput("");
   };
 
-  // Tags
+  // Add Tag
   const handleAddTag = () => {
     const tag = tagInput.trim();
     if (!tag || formData.tags.includes(tag)) return;
-    setFormData((prev) => ({ ...prev, tags: [...prev.tags, tag] }));
+    setFormData((prev) => ({
+      ...prev,
+      tags: [...prev.tags, tag],
+    }));
     setTagInput("");
   };
 
-  // Variants
+  // Add Variant
   const handleAddVariant = () => {
     if (!variantInput.color || !variantInput.size || !variantInput.price) {
       Swal.fire("Warning", "Fill all variant fields!", "warning");
       return;
     }
-    setFormData((prev) => ({ ...prev, variants: [...prev.variants, { ...variantInput }] }));
+    setFormData((prev) => ({
+      ...prev,
+      variants: [...prev.variants, { ...variantInput }],
+    }));
     setVariantInput({ color: "", size: "", price: "", stock: "" });
   };
 
+  // Submit Product
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!collection) {
@@ -88,7 +117,9 @@ const FeatureFormProAdvanced = () => {
           brand: "",
           category: "",
           subcategory: "",
+          description: "",
           price: "",
+          discountPrice: "",
           stock: "",
           images: [],
           tags: [],
@@ -111,7 +142,8 @@ const FeatureFormProAdvanced = () => {
     <div className="max-w-4xl mx-auto mt-8 bg-white shadow-lg p-6 rounded-lg">
       <h2 className="text-2xl font-bold text-orange-600 mb-6 text-center">Add Product</h2>
       <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
-        {/* Collection Selection */}
+        
+        {/* Collection */}
         <select
           value={collection}
           onChange={(e) => setCollection(e.target.value)}
@@ -125,9 +157,41 @@ const FeatureFormProAdvanced = () => {
           ))}
         </select>
 
-        {/* Basic Product Info */}
+        {/* Product Info */}
         <input type="text" name="name" placeholder="Product Name *" value={formData.name} onChange={handleChange} className="border p-2 rounded outline-none"/>
+        <input type="text" name="sku" placeholder="SKU" value={formData.sku} onChange={handleChange} className="border p-2 rounded outline-none"/>
+        <input type="text" name="brand" placeholder="Brand" value={formData.brand} onChange={handleChange} className="border p-2 rounded outline-none"/>
+
+        {/* Category Selection */}
+        <select
+          name="category"
+          value={formData.category}
+          onChange={handleChange}
+          className="border p-2 rounded outline-none"
+        >
+          <option value="">Select Category *</option>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+
+        <input type="text" name="subcategory" placeholder="Subcategory" value={formData.subcategory} onChange={handleChange} className="border p-2 rounded outline-none"/>
+
+        {/* Description */}
+        <textarea
+          name="description"
+          placeholder="Product Description"
+          value={formData.description}
+          onChange={handleChange}
+          className="border p-2 rounded md:col-span-2 outline-none h-24"
+        ></textarea>
+
+        {/* Prices */}
         <input type="number" name="price" placeholder="Price *" value={formData.price} onChange={handleChange} className="border p-2 rounded outline-none"/>
+        <input type="number" name="discountPrice" placeholder="Discount Price" value={formData.discountPrice} onChange={handleChange} className="border p-2 rounded outline-none"/>
+
         <input type="number" name="stock" placeholder="Stock" value={formData.stock} onChange={handleChange} className="border p-2 rounded outline-none"/>
 
         {/* Images */}
@@ -138,9 +202,7 @@ const FeatureFormProAdvanced = () => {
           </div>
           <div className="flex flex-wrap gap-2 mt-2">
             {formData.images.map((img, i) => (
-              <div key={i} className="relative">
-                <img src={img} alt="" className="h-20 w-20 object-cover rounded border"/>
-              </div>
+              <img key={i} src={img} alt="" className="h-20 w-20 object-cover rounded border"/>
             ))}
           </div>
         </div>

@@ -1,13 +1,33 @@
 // File: src/components/ToysForm.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+
+const defaultTagsMap = {
+  Car: ["Toy Car", "Kids Toy", "Vehicle"],
+  Doll: ["Doll", "Kids Toy", "Soft Toy"],
+  Teddy: ["Teddy", "Soft Toy", "Baby Toy"],
+  Puzzle: ["Puzzle", "Educational", "Brain Game"],
+  "Building Blocks": ["Blocks", "Construction Toy", "Kids Toy"],
+  Educational: ["Learning Toy", "Educational", "Kids Toy"],
+  "Action Figure": ["Action Figure", "Collectible", "Kids Toy"],
+  "Musical Toys": ["Music Toy", "Educational", "Baby Toy"],
+  "Stuffed Animals": ["Stuffed Toy", "Soft Toy", "Baby Toy"],
+  "Soft Toys": ["Soft Toy", "Plush", "Kids Toy"],
+  "Board Games": ["Board Game", "Family Game", "Kids Toy"],
+  "Ride-On Toys": ["Ride-On", "Outdoor Toy", "Kids Toy"],
+  "Learning & Activity Toys": ["Educational", "Activity Toy", "Kids Toy"],
+  "Bath Toys": ["Bath Toy", "Water Toy", "Baby Toy"],
+  "Toy Vehicles": ["Car", "Vehicle", "Kids Toy"],
+  "Stacking & Sorting Toys": ["Stacking Toy", "Sorting Toy", "Educational"],
+  "Pretend Play": ["Pretend Play", "Role Play", "Kids Toy"],
+};
 
 const ToysForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     sku: "",
     brand: "",
-    category: "",
+    category: "Toys",
     subcategory: "",
     price: "",
     hasDiscount: false,
@@ -35,7 +55,13 @@ const ToysForm = () => {
   const [variantInput, setVariantInput] = useState({ color: "", size: "", price: "", stock: "" });
   const [hoverRating, setHoverRating] = useState(0);
 
-  // Handle input changes
+  // Auto-fill tags when subcategory changes
+  useEffect(() => {
+    if (formData.subcategory) {
+      setFormData((prev) => ({ ...prev, tags: defaultTagsMap[formData.subcategory] || [] }));
+    }
+  }, [formData.subcategory]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
@@ -72,20 +98,18 @@ const ToysForm = () => {
   const handleRemoveVariant = (idx) =>
     setFormData((prev) => ({ ...prev, variants: prev.variants.filter((_, i) => i !== idx) }));
 
-  // Submit form
+  // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
-    if (!formData.name || !formData.category || !formData.price || formData.images.length === 0) {
+    if (!formData.name || !formData.subcategory || !formData.price || formData.images.length === 0) {
       Swal.fire("Missing Fields", "Please fill required fields and add at least one image.", "warning");
       return;
     }
-    if (formData.hasDiscount) {
-      if (!formData.discountPrice || parseFloat(formData.discountPrice) >= parseFloat(formData.price)) {
-        Swal.fire("Invalid Discount", "Discount price must be less than regular price.", "warning");
-        return;
-      }
+
+    if (formData.hasDiscount && (!formData.discountPrice || parseFloat(formData.discountPrice) >= parseFloat(formData.price))) {
+      Swal.fire("Invalid Discount", "Discount price must be less than regular price.", "warning");
+      return;
     }
 
     try {
@@ -94,36 +118,16 @@ const ToysForm = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       const data = await res.json();
 
       if (res.ok) {
         Swal.fire("Success", "Product added successfully!", "success");
         setFormData({
-          name: "",
-          sku: "",
-          brand: "",
-          category: "",
-          subcategory: "",
-          price: "",
-          hasDiscount: false,
-          discountPrice: "",
-          discountStart: "",
-          discountEnd: "",
-          stock: "",
-          status: "published",
-          featured: false,
-          weight: "",
-          dimensions: "",
-          description: "",
-          images: [],
-          tags: [],
-          variants: [],
-          metaTitle: "",
-          metaDescription: "",
-          metaKeywords: "",
-          relatedProducts: [],
-          rating: 0,
+          name: "", sku: "", brand: "", category: "Toys", subcategory: "", price: "",
+          hasDiscount: false, discountPrice: "", discountStart: "", discountEnd: "",
+          stock: "", status: "published", featured: false, weight: "", dimensions: "",
+          description: "", images: [], tags: [], variants: [], metaTitle: "",
+          metaDescription: "", metaKeywords: "", relatedProducts: [], rating: 0,
         });
         setImageInput("");
         setTagInput("");
@@ -142,22 +146,21 @@ const ToysForm = () => {
     <div className="max-w-7xl mx-auto mt-8 bg-white shadow-lg p-6 rounded-lg">
       <div className="text-2xl font-bold text-orange-600 mb-6 text-center">Add Toys Product</div>
       <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
-        {/* Product Info */}
-        <input type="text" name="name" placeholder="Product Name *" value={formData.name} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
-        <input type="text" name="sku" placeholder="SKU / Code" value={formData.sku} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
-        <input type="text" name="brand" placeholder="Brand" value={formData.brand} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
-        <select name="category" value={formData.category} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none">
-          <option value="">Category *</option>
-          <option value="Electronics">Electronics</option>
-          <option value="Fashion">Fashion</option>
-          <option value="Home">Home & Garden</option>
-          <option value="Sports">Sports</option>
+        {/* Basic Info */}
+        <input type="text" name="name" placeholder="Product Name *" value={formData.name} onChange={handleChange} className="border p-2 rounded"/>
+        <input type="text" name="sku" placeholder="SKU / Code" value={formData.sku} onChange={handleChange} className="border p-2 rounded"/>
+        <input type="text" name="brand" placeholder="Brand" value={formData.brand} onChange={handleChange} className="border p-2 rounded"/>
+        <input type="text" value="Toys" disabled className="border p-2 rounded bg-gray-100"/>
+        <select name="subcategory" value={formData.subcategory} onChange={handleChange} className="border p-2 rounded">
+          <option value="">Select Toy Type *</option>
+          {Object.keys(defaultTagsMap).map((sub) => (
+            <option key={sub} value={sub}>{sub}</option>
+          ))}
         </select>
-        <input type="text" name="subcategory" placeholder="Subcategory" value={formData.subcategory} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
-        <input type="number" name="price" placeholder="Price (৳) *" value={formData.price} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
-        <input type="number" name="stock" placeholder="Stock Quantity" value={formData.stock} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
-        <input type="text" name="weight" placeholder="Weight (kg)" value={formData.weight} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
-
+        <input type="number" name="price" placeholder="Price (৳) *" value={formData.price} onChange={handleChange} className="border p-2 rounded"/>
+        <input type="number" name="stock" placeholder="Stock Quantity" value={formData.stock} onChange={handleChange} className="border p-2 rounded"/>
+        <input type="text" name="weight" placeholder="Weight (kg)" value={formData.weight} onChange={handleChange} className="border p-2 rounded"/>
+        
         {/* Discount */}
         <div className="flex items-center gap-2">
           <input type="checkbox" name="hasDiscount" checked={formData.hasDiscount} onChange={handleChange} className="w-4 h-4"/>
@@ -165,9 +168,9 @@ const ToysForm = () => {
         </div>
         {formData.hasDiscount && (
           <>
-            <input type="number" name="discountPrice" placeholder="Discount Price" value={formData.discountPrice} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
-            <input type="date" name="discountStart" value={formData.discountStart} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
-            <input type="date" name="discountEnd" value={formData.discountEnd} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
+            <input type="number" name="discountPrice" placeholder="Discount Price" value={formData.discountPrice} onChange={handleChange} className="border p-2 rounded"/>
+            <input type="date" name="discountStart" value={formData.discountStart} onChange={handleChange} className="border p-2 rounded"/>
+            <input type="date" name="discountEnd" value={formData.discountEnd} onChange={handleChange} className="border p-2 rounded"/>
           </>
         )}
 
@@ -176,30 +179,30 @@ const ToysForm = () => {
           <input type="checkbox" name="featured" checked={formData.featured} onChange={handleChange} className="w-4 h-4"/>
           <span>Featured Product</span>
         </div>
-        <select name="status" value={formData.status} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none">
+        <select name="status" value={formData.status} onChange={handleChange} className="border p-2 rounded">
           <option value="published">Published</option>
           <option value="draft">Draft</option>
           <option value="hidden">Hidden</option>
         </select>
 
         {/* Description */}
-        <textarea name="description" placeholder="Product Description" value={formData.description} onChange={handleChange} rows="4" className="border p-2 rounded md:col-span-2 focus:ring-2 focus:ring-orange-500 outline-none"/>
+        <textarea name="description" placeholder="Product Description" value={formData.description} onChange={handleChange} rows="4" className="border p-2 rounded md:col-span-2"/>
 
         {/* Dimensions */}
-        <input type="text" name="dimensions" placeholder="Dimensions (L x W x H)" value={formData.dimensions} onChange={handleChange} className="border p-2 rounded md:col-span-2 focus:ring-2 focus:ring-orange-500 outline-none"/>
+        <input type="text" name="dimensions" placeholder="Dimensions (L x W x H)" value={formData.dimensions} onChange={handleChange} className="border p-2 rounded md:col-span-2"/>
 
         {/* Images */}
         <div className="md:col-span-2">
-          <h4 className="font-semibold mb-2 text-gray-700">Product Images *</h4>
+          <h4 className="font-semibold mb-2">Product Images *</h4>
           <div className="flex gap-2 mb-2">
-            <input type="text" placeholder="Image URL" value={imageInput} onChange={(e) => setImageInput(e.target.value)} className="border p-2 rounded flex-1 focus:ring-2 focus:ring-orange-500 outline-none"/>
-            <button type="button" onClick={handleAddImage} className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded transition">Add Image</button>
+            <input type="text" placeholder="Image URL" value={imageInput} onChange={(e) => setImageInput(e.target.value)} className="border p-2 rounded flex-1"/>
+            <button type="button" onClick={handleAddImage} className="bg-orange-500 text-white px-4 py-2 rounded">Add Image</button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
             {formData.images.map((img,i) => (
               <div key={i} className="relative group">
                 <img src={img} alt={`Product ${i+1}`} className="h-32 w-full object-cover rounded border"/>
-                <button type="button" onClick={() => handleRemoveImage(i)} className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-7 h-7 rounded-full flex justify-center items-center opacity-0 group-hover:opacity-100 transition">×</button>
+                <button type="button" onClick={() => handleRemoveImage(i)} className="absolute top-2 right-2 bg-red-500 text-white w-7 h-7 rounded-full opacity-0 group-hover:opacity-100 transition">×</button>
               </div>
             ))}
           </div>
@@ -207,19 +210,24 @@ const ToysForm = () => {
 
         {/* Variants */}
         <div className="md:col-span-2">
-          <h4 className="font-semibold mb-2 text-gray-700">Product Variants</h4>
+          <h4 className="font-semibold mb-2">Product Variants</h4>
           <div className="flex gap-2 mb-2 flex-wrap">
-            <input type="text" placeholder="Color" value={variantInput.color} onChange={(e) => setVariantInput({...variantInput, color:e.target.value})} className="border p-2 rounded flex-1 min-w-[100px]"/>
-            <input type="text" placeholder="Size" value={variantInput.size} onChange={(e) => setVariantInput({...variantInput, size:e.target.value})} className="border p-2 rounded flex-1 min-w-[100px]"/>
-            <input type="number" placeholder="Price" value={variantInput.price} onChange={(e) => setVariantInput({...variantInput, price:e.target.value})} className="border p-2 rounded flex-1 min-w-[100px]"/>
-            <input type="number" placeholder="Stock" value={variantInput.stock} onChange={(e) => setVariantInput({...variantInput, stock:e.target.value})} className="border p-2 rounded flex-1 min-w-[100px]"/>
-            <button type="button" onClick={handleAddVariant} className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded transition">Add</button>
+            <input type="text" placeholder="Color" value={variantInput.color} onChange={(e) => setVariantInput({...variantInput, color:e.target.value})} className="border p-2 rounded min-w-[100px]"/>
+            <select value={variantInput.size} onChange={(e) => setVariantInput({...variantInput, size:e.target.value})} className="border p-2 rounded min-w-[120px]">
+              <option value="">Size</option>
+              <option value="Small">Small</option>
+              <option value="Medium">Medium</option>
+              <option value="Large">Large</option>
+            </select>
+            <input type="number" placeholder="Price" value={variantInput.price} onChange={(e) => setVariantInput({...variantInput, price:e.target.value})} className="border p-2 rounded min-w-[100px]"/>
+            <input type="number" placeholder="Stock" value={variantInput.stock} onChange={(e) => setVariantInput({...variantInput, stock:e.target.value})} className="border p-2 rounded min-w-[100px]"/>
+            <button type="button" onClick={handleAddVariant} className="bg-orange-500 text-white px-4 py-2 rounded">Add</button>
           </div>
           <div className="flex flex-wrap gap-2">
             {formData.variants.map((v,i) => (
               <div key={i} className="bg-orange-100 px-3 py-2 rounded flex gap-2 items-center">
                 <span className="text-sm">{v.color}/{v.size} - ৳{v.price} (Stock: {v.stock})</span>
-                <button type="button" onClick={() => handleRemoveVariant(i)} className="text-red-500 hover:text-red-700 font-bold text-lg">×</button>
+                <button type="button" onClick={() => handleRemoveVariant(i)} className="text-red-500 font-bold text-lg">×</button>
               </div>
             ))}
           </div>
@@ -227,16 +235,16 @@ const ToysForm = () => {
 
         {/* Tags */}
         <div className="md:col-span-2">
-          <h4 className="font-semibold mb-2 text-gray-700">Tags</h4>
+          <h4 className="font-semibold mb-2">Tags</h4>
           <div className="flex gap-2 mb-2">
-            <input type="text" placeholder="Add tag" value={tagInput} onChange={(e) => setTagInput(e.target.value)} onKeyPress={(e) => {if(e.key==="Enter"){e.preventDefault();handleAddTag();}}} className="border p-2 rounded flex-1 focus:ring-2 focus:ring-orange-500 outline-none"/>
-            <button type="button" onClick={handleAddTag} className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded transition">Add Tag</button>
+            <input type="text" placeholder="Add tag" value={tagInput} onChange={(e) => setTagInput(e.target.value)} onKeyPress={(e) => {if(e.key==="Enter"){e.preventDefault();handleAddTag();}}} className="border p-2 rounded flex-1"/>
+            <button type="button" onClick={handleAddTag} className="bg-orange-500 text-white px-4 py-2 rounded">Add Tag</button>
           </div>
           <div className="flex flex-wrap gap-2">
             {formData.tags.map((t,i) => (
               <div key={i} className="bg-orange-100 px-3 py-1 rounded flex gap-2 items-center">
                 <span className="text-sm">{t}</span>
-                <button type="button" onClick={() => handleRemoveTag(i)} className="text-red-500 hover:text-red-700 font-bold">×</button>
+                <button type="button" onClick={() => handleRemoveTag(i)} className="text-red-500 font-bold">×</button>
               </div>
             ))}
           </div>
@@ -244,7 +252,7 @@ const ToysForm = () => {
 
         {/* Rating */}
         <div className="md:col-span-2">
-          <h4 className="font-semibold mb-2 text-gray-700">Rating</h4>
+          <h4 className="font-semibold mb-2">Rating</h4>
           <div className="flex items-center gap-1 text-xl">
             {[1,2,3,4,5].map((star) => (
               <button
@@ -263,12 +271,12 @@ const ToysForm = () => {
         </div>
 
         {/* SEO */}
-        <input type="text" name="metaTitle" placeholder="Meta Title" value={formData.metaTitle} onChange={handleChange} className="border p-2 rounded md:col-span-2 focus:ring-2 focus:ring-orange-500 outline-none"/>
-        <textarea name="metaDescription" placeholder="Meta Description" value={formData.metaDescription} onChange={handleChange} rows="2" className="border p-2 rounded md:col-span-2 focus:ring-2 focus:ring-orange-500 outline-none"/>
-        <input type="text" name="metaKeywords" placeholder="Meta Keywords (comma separated)" value={formData.metaKeywords} onChange={handleChange} className="border p-2 rounded md:col-span-2 focus:ring-2 focus:ring-orange-500 outline-none"/>
+        <input type="text" name="metaTitle" placeholder="Meta Title" value={formData.metaTitle} onChange={handleChange} className="border p-2 rounded md:col-span-2"/>
+        <textarea name="metaDescription" placeholder="Meta Description" value={formData.metaDescription} onChange={handleChange} rows="2" className="border p-2 rounded md:col-span-2"/>
+        <input type="text" name="metaKeywords" placeholder="Meta Keywords (comma separated)" value={formData.metaKeywords} onChange={handleChange} className="border p-2 rounded md:col-span-2"/>
 
         {/* Submit */}
-        <button type="submit" className="md:col-span-2 py-3 mt-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-lg transition transform hover:scale-[1.02] active:scale-[0.98]">
+        <button type="submit" className="md:col-span-2 py-3 mt-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-lg transition transform hover:scale-[1.02] active:scale-[0.98]">
           Add Product
         </button>
       </form>

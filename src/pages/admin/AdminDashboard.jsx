@@ -1,7 +1,7 @@
+// File: src/pages/AdminDashboard.jsx
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 
-// Collections
 const collections = [
   "smartphones",
   "sportsproducts",
@@ -18,19 +18,37 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
-  // Form state
+  // Form setup
   const initialForm = {
-    name: "", sku: "", brand: "", category: "", subcategory: "", price: "",
-    hasDiscount: false, discountPrice: "", discountStart: "", discountEnd: "",
-    stock: "", status: "published", featured: false, weight: "", dimensions: "",
-    description: "", images: [], tags: [], variants: [], metaTitle: "",
-    metaDescription: "", metaKeywords: "", relatedProducts: [], rating: 0,
+    name: "",
+    sku: "",
+    brand: "",
+    category: "",
+    subcategory: "",
+    price: "",
+    hasDiscount: false,
+    discountPrice: "",
+    discountStart: "",
+    discountEnd: "",
+    stock: "",
+    status: "published",
+    featured: false,
+    weight: "",
+    dimensions: "",
+    description: "",
+    images: [],
+    tags: [],
+    variants: [],
+    metaTitle: "",
+    metaDescription: "",
+    metaKeywords: "",
+    relatedProducts: [],
+    rating: 0,
   };
+
   const [formData, setFormData] = useState(initialForm);
   const [imageInput, setImageInput] = useState("");
-  const [tagInput, setTagInput] = useState("");
-  const [variantInput, setVariantInput] = useState({ color: "", size: "", price: "", stock: "" });
-  const [hoverRating, setHoverRating] = useState(0);
+  const [search, setSearch] = useState("");
 
   // Fetch products
   const fetchProducts = async () => {
@@ -41,7 +59,6 @@ const AdminDashboard = () => {
       const data = await res.json();
       setProducts(data);
     } catch (err) {
-      console.error(err);
       Swal.fire("Error", "Failed to fetch products", "error");
     } finally {
       setLoading(false);
@@ -52,189 +69,301 @@ const AdminDashboard = () => {
     fetchProducts();
   }, [collection]);
 
-  // Form handlers
+  // Input handler
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleAddImage = () => {
     if (!imageInput.trim()) return;
-    setFormData(prev => ({ ...prev, images: [...prev.images, imageInput] }));
+    setFormData((prev) => ({ ...prev, images: [...prev.images, imageInput] }));
     setImageInput("");
   };
-  const handleRemoveImage = (idx) =>
-    setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }));
 
-  const handleAddTag = () => {
-    const tag = tagInput.trim();
-    if (!tag || formData.tags.includes(tag)) return;
-    setFormData(prev => ({ ...prev, tags: [...prev.tags, tag] }));
-    setTagInput("");
+  const handleRemoveImage = (idx) => {
+    setFormData((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== idx),
+    }));
   };
-  const handleRemoveTag = (idx) =>
-    setFormData(prev => ({ ...prev, tags: prev.tags.filter((_, i) => i !== idx) }));
 
-  const handleAddVariant = () => {
-    if (!variantInput.color || !variantInput.size || !variantInput.price) {
-      Swal.fire("Warning", "Fill all variant fields!", "warning");
-      return;
-    }
-    setFormData(prev => ({ ...prev, variants: [...prev.variants, { ...variantInput }] }));
-    setVariantInput({ color: "", size: "", price: "", stock: "" });
+  const resetForm = () => {
+    setFormData(initialForm);
+    setEditingProduct(null);
   };
-  const handleRemoveVariant = (idx) =>
-    setFormData(prev => ({ ...prev, variants: prev.variants.filter((_, i) => i !== idx) }));
 
-  // Submit form
+  // Submit product
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!collection)
+      return Swal.fire("Missing!", "Please select a collection", "warning");
 
-    // Validation
-    if (!collection) return Swal.fire("Select Collection", "Please select a collection", "warning");
-    if (!formData.name || !formData.category || !formData.price || formData.images.length === 0) {
-      return Swal.fire("Missing Fields", "Fill required fields and add at least one image.", "warning");
-    }
-    if (formData.hasDiscount && (!formData.discountPrice || parseFloat(formData.discountPrice) >= parseFloat(formData.price))) {
-      return Swal.fire("Invalid Discount", "Discount price must be less than regular price.", "warning");
-    }
+    if (!formData.name || !formData.price)
+      return Swal.fire("Invalid!", "Name and Price are required", "warning");
+
+    const url = editingProduct
+      ? `https://shopnest-ecom.onrender.com/${collection}/${editingProduct._id}`
+      : `https://shopnest-ecom.onrender.com/${collection}`;
+    const method = editingProduct ? "PUT" : "POST";
 
     try {
-      const url = editingProduct ? `https://shopnest-ecom.onrender.com/${collection}/${editingProduct._id}` : `https://shopnest-ecom.onrender.com/${collection}`;
-      const method = editingProduct ? "PUT" : "POST";
-
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      const data = await res.json();
 
       if (res.ok) {
-        Swal.fire("Success", `Product ${editingProduct ? "updated" : "added"} successfully!`, "success");
-        setFormData(initialForm);
-        setEditingProduct(null);
+        Swal.fire(
+          "Success",
+          `Product ${editingProduct ? "updated" : "added"} successfully!`,
+          "success"
+        );
         fetchProducts();
+        resetForm();
       } else {
-        Swal.fire("Error", data.error || "Failed to submit product", "error");
+        Swal.fire("Error", "Failed to save product", "error");
       }
-    } catch (err) {
-      Swal.fire("Error", "Network error", "error");
-      console.error(err);
+    } catch {
+      Swal.fire("Error", "Network issue", "error");
     }
   };
 
-  // Edit product
+  // Edit / Delete
   const handleEdit = (product) => {
     setEditingProduct(product);
     setFormData(product);
-    setHoverRating(product.rating || 0);
   };
 
-  // Delete product
   const handleDelete = async (id) => {
     const confirmed = await Swal.fire({
-      title: "Delete product?",
-      text: "This action cannot be undone",
+      title: "Are you sure?",
+      text: "This product will be permanently deleted.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "Delete",
     });
     if (confirmed.isConfirmed) {
       try {
-        const res = await fetch(`https://shopnest-ecom.onrender.com/${collection}/${id}`, { method: "DELETE" });
+        const res = await fetch(
+          `https://shopnest-ecom.onrender.com/${collection}/${id}`,
+          { method: "DELETE" }
+        );
         if (res.ok) {
-          Swal.fire("Deleted!", "Product deleted successfully.", "success");
+          Swal.fire("Deleted!", "Product has been deleted.", "success");
           fetchProducts();
-        } else {
-          Swal.fire("Error", "Failed to delete product", "error");
         }
-      } catch (err) {
-        Swal.fire("Error", "Network error", "error");
+      } catch {
+        Swal.fire("Error", "Failed to delete product", "error");
       }
     }
   };
 
+  // Filter products by search
+  const filtered = products.filter((p) =>
+    p.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div className="max-w-7xl mx-auto mt-8">
-      {/* Collection selector */}
-      <div className="mb-4 flex items-center gap-2">
-        <select
-          value={collection}
-          onChange={(e) => setCollection(e.target.value)}
-          className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"
-        >
-          <option value="">Select Collection</option>
-          {collections.map(col => (
-            <option key={col} value={col}>{col.charAt(0).toUpperCase() + col.slice(1)}</option>
-          ))}
-        </select>
+    <div className="max-w-7xl mx-auto mt-8 space-y-8">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <h1 className="text-3xl font-bold text-orange-600">
+          🛒 Admin Dashboard
+        </h1>
+
+        <div className="flex gap-2">
+          <select
+            value={collection}
+            onChange={(e) => setCollection(e.target.value)}
+            className="border p-2 rounded focus:ring-2 focus:ring-orange-500"
+          >
+            <option value="">Select Collection</option>
+            {collections.map((col) => (
+              <option key={col} value={col}>
+                {col.charAt(0).toUpperCase() + col.slice(1)}
+              </option>
+            ))}
+          </select>
+          <input
+            type="text"
+            placeholder="🔍 Search product..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border p-2 rounded focus:ring-2 focus:ring-orange-500"
+          />
+        </div>
       </div>
 
-      {/* Form */}
-      <div className="bg-white shadow p-6 rounded-lg mb-8">
-        <h2 className="text-2xl font-bold text-orange-600 mb-4">{editingProduct ? "Edit Product" : "Add Product"}</h2>
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
-          <input type="text" name="name" placeholder="Product Name *" value={formData.name} onChange={handleChange} className="border p-2 rounded"/>
-          <input type="text" name="sku" placeholder="SKU / Code" value={formData.sku} onChange={handleChange} className="border p-2 rounded"/>
-          <input type="text" name="brand" placeholder="Brand" value={formData.brand} onChange={handleChange} className="border p-2 rounded"/>
-          <select name="category" value={formData.category} onChange={handleChange} className="border p-2 rounded">
-            <option value="">Category *</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Fashion">Fashion</option>
-            <option value="Home">Home & Garden</option>
-            <option value="Sports">Sports</option>
-          </select>
-          <input type="text" name="subcategory" placeholder="Subcategory" value={formData.subcategory} onChange={handleChange} className="border p-2 rounded"/>
-          <input type="number" name="price" placeholder="Price *" value={formData.price} onChange={handleChange} className="border p-2 rounded"/>
-          <input type="number" name="stock" placeholder="Stock" value={formData.stock} onChange={handleChange} className="border p-2 rounded"/>
-          <input type="text" name="weight" placeholder="Weight" value={formData.weight} onChange={handleChange} className="border p-2 rounded"/>
-          <div className="flex items-center gap-2">
-            <input type="checkbox" name="hasDiscount" checked={formData.hasDiscount} onChange={handleChange}/>
-            <span>Apply Discount</span>
+      {/* Add/Edit Form */}
+      <div className="bg-white shadow p-6 rounded-lg">
+        <h2 className="text-xl font-semibold mb-4 text-gray-700">
+          {editingProduct ? "✏️ Edit Product" : "➕ Add Product"}
+        </h2>
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          <input
+            type="text"
+            name="name"
+            placeholder="Product Name *"
+            value={formData.name}
+            onChange={handleChange}
+            className="border p-2 rounded"
+          />
+          <input
+            type="number"
+            name="price"
+            placeholder="Price *"
+            value={formData.price}
+            onChange={handleChange}
+            className="border p-2 rounded"
+          />
+          <input
+            type="number"
+            name="stock"
+            placeholder="Stock"
+            value={formData.stock}
+            onChange={handleChange}
+            className="border p-2 rounded"
+          />
+          <input
+            type="text"
+            name="category"
+            placeholder="Category"
+            value={formData.category}
+            onChange={handleChange}
+            className="border p-2 rounded"
+          />
+
+          {/* Image management */}
+          <div className="md:col-span-2">
+            <div className="flex gap-2 mb-2">
+              <input
+                type="text"
+                placeholder="Image URL"
+                value={imageInput}
+                onChange={(e) => setImageInput(e.target.value)}
+                className="border p-2 rounded flex-1"
+              />
+              <button
+                type="button"
+                onClick={handleAddImage}
+                className="bg-green-500 text-white px-4 rounded"
+              >
+                Add
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {formData.images.map((img, idx) => (
+                <div key={idx} className="relative">
+                  <img
+                    src={img}
+                    alt=""
+                    className="w-20 h-20 object-cover rounded border"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(idx)}
+                    className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-full"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
-          {formData.hasDiscount && (
-            <>
-              <input type="number" name="discountPrice" placeholder="Discount Price" value={formData.discountPrice} onChange={handleChange} className="border p-2 rounded"/>
-              <input type="date" name="discountStart" value={formData.discountStart} onChange={handleChange} className="border p-2 rounded"/>
-              <input type="date" name="discountEnd" value={formData.discountEnd} onChange={handleChange} className="border p-2 rounded"/>
-            </>
-          )}
-          <textarea name="description" placeholder="Description" value={formData.description} onChange={handleChange} rows="3" className="border p-2 rounded md:col-span-2"/>
-          <button type="submit" className="md:col-span-2 py-2 bg-orange-500 text-white rounded">{editingProduct ? "Update Product" : "Add Product"}</button>
+
+          <textarea
+            name="description"
+            placeholder="Description"
+            value={formData.description}
+            onChange={handleChange}
+            rows="3"
+            className="border p-2 rounded md:col-span-2"
+          />
+
+          <div className="flex gap-3 md:col-span-2">
+            <button
+              type="submit"
+              className="bg-orange-500 text-white px-5 py-2 rounded hover:bg-orange-600"
+            >
+              {editingProduct ? "Update Product" : "Add Product"}
+            </button>
+            {editingProduct && (
+              <button
+                type="button"
+                onClick={resetForm}
+                className="bg-gray-400 text-white px-5 py-2 rounded hover:bg-gray-500"
+              >
+                Cancel Edit
+              </button>
+            )}
+          </div>
         </form>
       </div>
 
-      {/* Products Table */}
-      <div className="overflow-x-auto bg-white shadow rounded-lg p-4">
-        {loading ? <p>Loading...</p> : (
-          <table className="w-full border-collapse border border-gray-300">
-            <thead className="bg-orange-100">
+      {/* Table */}
+      <div className="bg-white shadow rounded-lg overflow-x-auto">
+        {loading ? (
+          <p className="text-center p-6">Loading...</p>
+        ) : (
+          <table className="w-full border-collapse text-sm">
+            <thead className="bg-orange-100 text-gray-700">
               <tr>
-                <th className="border px-2 py-1">#</th>
-                <th className="border px-2 py-1">Name</th>
-                <th className="border px-2 py-1">Price</th>
-                <th className="border px-2 py-1">Stock</th>
-                <th className="border px-2 py-1">Rating</th>
-                <th className="border px-2 py-1">Actions</th>
+                <th className="border px-2 py-2">#</th>
+                <th className="border px-2 py-2">Image</th>
+                <th className="border px-2 py-2">Name</th>
+                <th className="border px-2 py-2">Price</th>
+                <th className="border px-2 py-2">Stock</th>
+                <th className="border px-2 py-2">Action</th>
               </tr>
             </thead>
             <tbody>
-              {products.length === 0 ? (
-                <tr><td colSpan="6" className="text-center py-4">No products found</td></tr>
-              ) : products.map((p, idx) => (
-                <tr key={p._id} className="hover:bg-orange-50">
-                  <td className="border px-2 py-1">{idx+1}</td>
-                  <td className="border px-2 py-1">{p.name}</td>
-                  <td className="border px-2 py-1">৳{p.price}</td>
-                  <td className="border px-2 py-1">{p.stock}</td>
-                  <td className="border px-2 py-1">{p.rating}</td>
-                  <td className="border px-2 py-1 flex gap-2">
-                    <button onClick={() => handleEdit(p)} className="bg-blue-500 text-white px-2 py-1 rounded">Edit</button>
-                    <button onClick={() => handleDelete(p._id)} className="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-4 text-gray-500">
+                    No products found
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filtered.map((p, i) => (
+                  <tr key={p._id} className="hover:bg-orange-50">
+                    <td className="border px-2 py-2">{i + 1}</td>
+                    <td className="border px-2 py-2">
+                      <img
+                        src={p.images?.[0]}
+                        alt=""
+                        className="w-12 h-12 object-cover rounded"
+                      />
+                    </td>
+                    <td className="border px-2 py-2">{p.name}</td>
+                    <td className="border px-2 py-2 text-orange-600 font-semibold">
+                      ৳{p.price}
+                    </td>
+                    <td className="border px-2 py-2">{p.stock}</td>
+                    <td className="border px-2 py-2 flex gap-2">
+                      <button
+                        onClick={() => handleEdit(p)}
+                        className="bg-blue-500 text-white px-3 py-1 rounded"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(p._id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         )}
