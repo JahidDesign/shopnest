@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 
-const API_URL = "https://shopnest-serveres.onrender.com/heroCarousel";
+const API_URL = "https://shopnest-ecom.onrender.com/sectionhero";
 
 const HeroCarouselManager = () => {
   const [slides, setSlides] = useState([]);

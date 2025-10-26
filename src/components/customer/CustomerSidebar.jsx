@@ -3,13 +3,12 @@ import { Link, useLocation } from "react-router-dom";
 import {
   FaHome,
   FaFileAlt,
-  FaMoneyBill,
   FaClipboardList,
   FaCog,
-  FaChevronDown,
   FaBars,
   FaAngleDoubleLeft,
   FaAngleDoubleRight,
+  FaUserCircle,
 } from "react-icons/fa";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -20,16 +19,13 @@ const CustomerSidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // Navigation links
+  // Memoized navigation links
   const navLinks = useMemo(
     () => [
-      { name: "Dashboard", path: "/customer", icon: FaHome },
-       { name: "Reviews Section", path: "/customer/reviews", icon: FaFileAlt },
-      { name: "My Policies", path: "/customer/my-policies", icon: FaClipboardList },
-      { name: "Payment Status", path: "/customer/payment-status", icon: FaMoneyBill },
-      { name: "Payment Page", path: "/customer/payment-page", icon: FaMoneyBill },
-      { name: "Claim Requests", path: "/customer/claims", icon: FaFileAlt },
-      { name: "Settings", path: "/customer/settings", icon: FaCog },
+      { name: "Dashboard", path: "/dashboard", icon: FaHome },
+      { name: "Reviews Section", path: "/dashboard/reviews", icon: FaFileAlt },
+      { name: "My Orders", path: "/dashboard/my-orders", icon: FaClipboardList },
+      { name: "Settings", path: "/dashboard/settings", icon: FaCog },
     ],
     []
   );
@@ -44,13 +40,15 @@ const CustomerSidebar = () => {
 
   return (
     <div className="flex h-screen">
+      {/* Sidebar */}
       <aside
-        className={`h-screen bg-slate-900 text-white fixed overflow-y-auto flex flex-col transition-all duration-300
+        className={`fixed top-0 left-0 h-full bg-slate-900 text-white flex flex-col transition-all duration-300 ease-in-out
         ${isCollapsed ? "w-20" : "w-64"}
-        ${isMobileOpen ? "translate-x-0" : "-translate-x-64"} lg:translate-x-0`}
+        ${isMobileOpen ? "translate-x-0" : "-translate-x-64"} 
+        lg:translate-x-0 z-40 shadow-xl`}
       >
         {/* Header */}
-        <div className="p-4 flex items-center justify-between border-b border-slate-700">
+        <div className="p-4 flex items-center justify-between border-b border-slate-800">
           {!isCollapsed && (
             <div>
               <h1 className="text-xl font-bold">Customer Panel</h1>
@@ -58,24 +56,29 @@ const CustomerSidebar = () => {
             </div>
           )}
           <button
+            aria-label="Toggle sidebar"
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 rounded hover:bg-slate-800/50"
+            className="p-2 rounded hover:bg-slate-800 transition-colors"
           >
             {isCollapsed ? <FaAngleDoubleRight /> : <FaAngleDoubleLeft />}
           </button>
         </div>
 
-        {/* Links */}
-        <nav className="flex-1 p-2 space-y-1">
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto p-2 space-y-1 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900">
           {navLinks.map(({ name, path, icon: Icon }) => (
             <Link
               key={path}
               to={path}
-              className={`flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-700 transition ${
-                isLinkActive(path) ? "bg-slate-700" : "text-slate-300"
-              }`}
+              onClick={() => setIsMobileOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-colors duration-200
+                ${
+                  isLinkActive(path)
+                    ? "bg-slate-700 text-white"
+                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                }`}
             >
-              <Icon />
+              <Icon className="text-lg" />
               {!isCollapsed && <span>{name}</span>}
             </Link>
           ))}
@@ -83,24 +86,33 @@ const CustomerSidebar = () => {
 
         {/* Footer */}
         {!isCollapsed && (
-          <div className="p-4 border-t border-slate-700 mt-auto">
-            <div className="flex items-center gap-3 bg-slate-800/50 rounded p-2">
-              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                👤
-              </div>
+          <div className="p-4 border-t border-slate-800 mt-auto">
+            <div className="flex items-center gap-3 bg-slate-800/50 rounded-lg p-2">
+              {user?.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt="User Avatar"
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <FaUserCircle className="text-3xl text-slate-400" />
+              )}
               <div>
-                <p className="text-sm">{displayName}</p>
-                <p className="text-xs text-slate-400">{user?.status || "Active"}</p>
+                <p className="text-sm font-semibold">{displayName}</p>
+                <p className="text-xs text-slate-400">
+                  {user?.status || "Active"}
+                </p>
               </div>
             </div>
           </div>
         )}
       </aside>
 
-      {/* Mobile toggle */}
+      {/* Mobile Menu Button */}
       <button
+        aria-label="Open sidebar"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="absolute top-4 left-4 z-50 lg:hidden bg-slate-900 text-white p-2 rounded"
+        className="absolute top-4 left-4 z-50 lg:hidden bg-slate-900 text-white p-2 rounded-md shadow-md"
       >
         <FaBars />
       </button>

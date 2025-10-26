@@ -64,7 +64,7 @@ const AddBlogForm = () => {
     };
 
     try {
-      await axios.post("https://shopnest-serveres.onrender.com/blogpost", newBlog);
+      await axios.post("https://shopnestecom.onrender.comog);
       showSuccessAlert();
       setFormData({
         title: "",

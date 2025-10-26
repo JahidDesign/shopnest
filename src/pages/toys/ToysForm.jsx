@@ -1,3 +1,4 @@
+// File: src/components/ToysForm.jsx
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 
@@ -26,7 +27,7 @@ const ToysForm = () => {
     metaDescription: "",
     metaKeywords: "",
     relatedProducts: [],
-    rating: 0, // <-- Star rating
+    rating: 0,
   });
 
   const [imageInput, setImageInput] = useState("");
@@ -88,22 +89,41 @@ const ToysForm = () => {
     }
 
     try {
-      const res = await fetch("https://shopnest-serveres.onrender.com/chilldsToy", {
+      const res = await fetch("https://shopnest-ecom.onrender.com/chilldsToy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+
       const data = await res.json();
 
       if (res.ok) {
         Swal.fire("Success", "Product added successfully!", "success");
-        // Reset form
         setFormData({
-          name: "", sku: "", brand: "", category: "", subcategory: "", price: "",
-          hasDiscount: false, discountPrice: "", discountStart: "", discountEnd: "",
-          stock: "", status: "published", featured: false, weight: "", dimensions: "",
-          description: "", images: [], tags: [], variants: [], metaTitle: "",
-          metaDescription: "", metaKeywords: "", relatedProducts: [], rating: 0,
+          name: "",
+          sku: "",
+          brand: "",
+          category: "",
+          subcategory: "",
+          price: "",
+          hasDiscount: false,
+          discountPrice: "",
+          discountStart: "",
+          discountEnd: "",
+          stock: "",
+          status: "published",
+          featured: false,
+          weight: "",
+          dimensions: "",
+          description: "",
+          images: [],
+          tags: [],
+          variants: [],
+          metaTitle: "",
+          metaDescription: "",
+          metaKeywords: "",
+          relatedProducts: [],
+          rating: 0,
         });
         setImageInput("");
         setTagInput("");
@@ -122,7 +142,6 @@ const ToysForm = () => {
     <div className="max-w-7xl mx-auto mt-8 bg-white shadow-lg p-6 rounded-lg">
       <div className="text-2xl font-bold text-orange-600 mb-6 text-center">Add Toys Product</div>
       <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
-
         {/* Product Info */}
         <input type="text" name="name" placeholder="Product Name *" value={formData.name} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
         <input type="text" name="sku" placeholder="SKU / Code" value={formData.sku} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
@@ -223,7 +242,7 @@ const ToysForm = () => {
           </div>
         </div>
 
-        {/* Star Rating */}
+        {/* Rating */}
         <div className="md:col-span-2">
           <h4 className="font-semibold mb-2 text-gray-700">Rating</h4>
           <div className="flex items-center gap-1 text-xl">

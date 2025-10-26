@@ -7,7 +7,7 @@ const Subscribers = () => {
 
   const fetchSubscribers = async () => {
     try {
-      const res = await fetch("https://shopnest-serveres.onrender.com/subscribers");
+      const res = await fetch("https://shopnest-ecom.onrender.com/subscribers");
       const data = await res.json();
       setSubscribers(data);
     } catch (err) { console.error(err); }
@@ -17,7 +17,7 @@ const Subscribers = () => {
   const deleteSubscriber = async (id) => {
     if (!window.confirm("Are you sure you want to delete this subscriber?")) return;
     try {
-      const res = await fetch(`https://shopnest-serveres.onrender.com/subscribers/${id}`, { method: "DELETE" });
+      const res = await fetch(`https://shopnest-ecom.onrender.com/subscribers}`, { method: "DELETE" });
       if (res.ok) setSubscribers(subscribers.filter(s => s._id !== id));
     } catch (err) { console.error(err); }
   };

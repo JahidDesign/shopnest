@@ -10,7 +10,7 @@ export default function AgentApplicationsIns() {
   // Fetch all applications
   const fetchData = async () => {
     try {
-      const res = await axios.get("https://shopnest-serveres.onrender.com/management");
+      const res = await axios.get("https://shopnest-ecom.onrender.com
       setApplications(res.data);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -24,7 +24,7 @@ export default function AgentApplicationsIns() {
   // Update status only (Approve/Reject)
   const updateStatus = async (id, newStatus) => {
     try {
-      await axios.put(`https://shopnest-serveres.onrender.com/management/${id}`, {
+      await axios.put(`https://shopnest-ecom.onrender.com`, {
         status: newStatus,
       });
       Swal.fire("Updated!", `Status changed to ${newStatus}`, "success");
@@ -38,7 +38,7 @@ export default function AgentApplicationsIns() {
   const saveEdit = async () => {
     try {
       await axios.put(
-        `https://shopnest-serveres.onrender.com/management/${editingApp._id}`,
+        `https://shopnestecom.onrender.comtingApp._id}`,
         editingApp
       );
       Swal.fire("Updated!", "Application details updated.", "success");

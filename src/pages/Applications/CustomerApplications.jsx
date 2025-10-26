@@ -10,7 +10,7 @@ export default function CustomerApplications() {
   useEffect(() => {
     if (!user?.email) return;
     axios
-      .get("https://shopnest-serveres.onrender.com/management")
+      .get("https://shopnest-ecom.onrender.com
       .then((res) => {
         const myApps = res.data.filter((app) => app.email === user.email);
         setApplications(myApps);

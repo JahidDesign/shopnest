@@ -18,7 +18,7 @@ const ManageBlogTable = () => {
   // Fetch all blogs
   const fetchBlogs = async () => {
     try {
-      const res = await axios.get("https://shopnest-serveres.onrender.com/blogpost");
+      const res = await axios.get("https://shopnest-ecom.onrender.com
       setBlogs(res.data);
     } catch (error) {
       console.error("Failed to fetch blogs", error);
@@ -44,7 +44,7 @@ const ManageBlogTable = () => {
 
     if (confirmed.isConfirmed) {
       try {
-        await axios.delete(`https://shopnest-serveres.onrender.com/blogpost/${id}`);
+        await axios.delete(`https://shopnest-ecom.onrender.com;
         setBlogs(blogs.filter((b) => b._id !== id));
         Swal.fire("Deleted!", "Blog has been deleted.", "success");
       } catch (error) {
@@ -90,7 +90,7 @@ const ManageBlogTable = () => {
     try {
       const updatedBlog = { ...formData, updatedAt: new Date().toISOString() };
       await axios.put(
-        `https://shopnest-serveres.onrender.com/blogpost/${editingBlog._id}`,
+        `https://shopnestecom.onrender.comngBlog._id}`,
         updatedBlog
       );
       setBlogs(
@@ -112,7 +112,7 @@ const ManageBlogTable = () => {
     try {
       const newBlog = { ...formData, date: new Date().toISOString() };
       const res = await axios.post(
-        "https://shopnest-serveres.onrender.com/blogpost",
+        "https://shopnest-ecom.onrender.com
         newBlog
       );
       setBlogs([res.data, ...blogs]);

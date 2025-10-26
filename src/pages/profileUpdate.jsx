@@ -38,7 +38,7 @@ const ProfileForm = () => {
     };
 
     try {
-      const response = await fetch('https://shopnest-serveres.onrender.com/profiledesign', {
+      const response = await fetch('https://shopnest-ecom.onrender.com{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

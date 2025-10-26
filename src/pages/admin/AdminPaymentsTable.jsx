@@ -16,7 +16,7 @@ const AdminPaymentsTable = () => {
   // Fetch all payments
   const fetchPayments = async () => {
     try {
-      const { data } = await axios.get("https://shopnest-serveres.onrender.com/payments");
+      const { data } = await axios.get("https://shopnest-ecom.onrender.com
       setPayments(data);
     } catch (err) {
       console.error(err);
@@ -49,7 +49,7 @@ const AdminPaymentsTable = () => {
   const updateStatus = async (id, newStatus) => {
     setPayments((prev) => prev.map((p) => (p._id === id ? { ...p, status: newStatus } : p)));
     try {
-      const { data } = await axios.patch(`https://shopnest-serveres.onrender.com/payments/${id}`, {
+      const { data } = await axios.patch(`https://shopnest-ecom.onrender.com {
         status: newStatus,
       });
       setPayments((prev) =>
@@ -80,7 +80,7 @@ const AdminPaymentsTable = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`https://shopnest-serveres.onrender.com/payments/${id}`);
+        await axios.delete(`https://shopnest-ecom.onrender.com;
         setPayments((prev) => prev.filter((p) => p._id !== id));
         Swal.fire("Deleted!", "Payment has been deleted.", "success");
       } catch (err) {
@@ -109,7 +109,7 @@ const AdminPaymentsTable = () => {
     if (confirm.isConfirmed) {
       try {
         await Promise.all(
-          selectedPayments.map((id) => axios.delete(`https://shopnest-serveres.onrender.com/payments/${id}`))
+          selectedPayments.map((id) => axios.delete(`https://shopnest-ecom.onrender.com)
         );
         setPayments((prev) => prev.filter((p) => !selectedPayments.includes(p._id)));
         setSelectedPayments([]);

@@ -8,7 +8,7 @@ import { Helmet } from "react-helmet-async";
 import { AuthContext } from "../context/AuthContext";
 import { Mail, Lock, Shield, Chrome, ArrowRight, Eye, EyeOff } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || "https://shopnest-serveres.onrender.com";
+const API_URL = import.meta.env.VITE_BACKEND_URL || "https://shopnest-ecom.onrender.com";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });

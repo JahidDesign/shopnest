@@ -17,7 +17,7 @@ export default function AdminApplicationsIns() {
   // ---------------- Fetch All ----------------
   const fetchData = async () => {
     try {
-      const res = await axios.get("https://shopnest-serveres.onrender.com/management");
+      const res = await axios.get("https://shopnest-ecom.onrender.com
       setApplications(res.data);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -32,7 +32,7 @@ export default function AdminApplicationsIns() {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("https://shopnest-serveres.onrender.com/management", newApp);
+      await axios.post("https://shopnestecom.onrender.comApp);
       Swal.fire("Success", "New application added!", "success");
       setNewApp({ name: "", email: "", insuranceType: "", coverage: "", status: "Pending" });
       fetchData();
@@ -44,7 +44,7 @@ export default function AdminApplicationsIns() {
   // ---------------- Update Status ----------------
   const updateStatus = async (id, newStatus) => {
     try {
-      await axios.put(`https://shopnest-serveres.onrender.com/management/${id}`, {
+      await axios.put(`https://shopnest-ecom.onrender.com`, {
         status: newStatus,
       });
       Swal.fire("Updated!", `Status changed to ${newStatus}`, "success");
@@ -58,7 +58,7 @@ export default function AdminApplicationsIns() {
   const handleEdit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`https://shopnest-serveres.onrender.com/management/${editApp._id}`, editApp);
+      await axios.put(`https://shopnestecom.onrender.comtApp._id}`, editApp);
       Swal.fire("Updated!", "Application updated successfully", "success");
       setEditApp(null);
       fetchData();
@@ -80,7 +80,7 @@ export default function AdminApplicationsIns() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`https://shopnest-serveres.onrender.com/management/${id}`);
+          await axios.delete(`https://shopnest-ecom.onrender.com`);
           Swal.fire("Deleted!", "Application has been removed.", "success");
           fetchData();
         } catch (err) {

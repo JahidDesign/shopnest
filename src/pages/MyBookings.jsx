@@ -14,7 +14,7 @@ const MyBookings = () => {
     const fetchBookings = async () => {
       try {
         // Fetch all bookings from bookInsurance API
-        const res = await fetch("https://shopnest-serveres.onrender.com/bookInsurance");
+        const res = await fetch("https://shopnest-ecom.onrender.com
         const data = await res.json();
 
         // Filter bookings for the logged-in user

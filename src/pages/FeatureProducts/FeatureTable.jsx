@@ -38,7 +38,7 @@ const FeatureFormProAdvancedWithBackend = () => {
 
   // Fetch products from backend
   useEffect(() => {
-    fetch("https://shopnest-serveres.onrender.com/featureProducts")
+    fetch("https://shopnest-ecom.onrender.com/featureProducts")
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch((err) => console.error(err));
@@ -61,14 +61,14 @@ const FeatureFormProAdvancedWithBackend = () => {
       let res;
       if (editId) {
         // Update existing product
-        res = await fetch(`https://shopnest-serveres.onrender.com/featureProducts/${editId}`, {
+        res = await fetch(`https://shopnest-ecom.onrender.com/featureProducts/${editId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
       } else {
         // Add new product
-        res = await fetch("https://shopnest-serveres.onrender.com/featureProducts", {
+        res = await fetch("https://shopnest-ecom.onrender.com/featureProducts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
@@ -82,7 +82,7 @@ const FeatureFormProAdvancedWithBackend = () => {
       Swal.fire("Success", `Product ${editId ? "updated" : "added"} successfully!`, "success");
 
       // Refresh product list
-      const updatedProducts = await fetch("https://shopnest-serveres.onrender.com/featureProducts").then((res) => res.json());
+      const updatedProducts = await fetch("https://shopnest-ecom.onrender.com/featureProducts").then((res) => res.json());
       setProducts(updatedProducts);
 
       // Reset form
@@ -121,7 +121,7 @@ const FeatureFormProAdvancedWithBackend = () => {
 
     if (result.isConfirmed) {
       try {
-        const res = await fetch(`https://shopnest-serveres.onrender.com/featureProducts/${_id}`, { method: "DELETE" });
+        const res = await fetch(`https://shopnest-ecom.onrender.com${_id}`, { method: "DELETE" });
         if (!res.ok) throw new Error("Failed to delete");
         setProducts(products.filter((p) => p._id !== _id));
         Swal.fire("Deleted!", "Product has been deleted.", "success");

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
 
-const API_URL = "https://shopnest-serveres.onrender.com/visitors";
+const API_URL = "https://shopnest-ecom.onrender.com/visitors";
 
 const VisitorsForm = () => {
   const [visitors, setVisitors] = useState([]);

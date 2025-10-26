@@ -88,7 +88,7 @@ const FeatureFormProAdvanced = () => {
     }
 
     try {
-      const res = await fetch("https://shopnest-serveres.onrender.com/featureProducts", {
+      const res = await fetch("https://shopnest-ecom.onrender.com/featureProducts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

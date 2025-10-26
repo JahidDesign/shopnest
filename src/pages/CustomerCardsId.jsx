@@ -18,7 +18,7 @@ const CustomerCards = () => {
 
     const controller = new AbortController();
 
-    fetch("https://shopnest-serveres.onrender.com/customer", {
+    fetch("https://shopnest-ecom.onrender.com
       headers: {
         Authorization: `Bearer ${authHeader}`,
         "Content-Type": "application/json",

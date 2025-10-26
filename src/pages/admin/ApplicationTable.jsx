@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const API_URL = "https://shopnest-serveres.onrender.com/management";
+const API_URL = "https://shopnest-ecom.onrender.com
 
 const defaultForm = {
   name: "",

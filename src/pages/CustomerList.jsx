@@ -17,7 +17,7 @@ const CustomerList = () => {
     }
 
     try {
-      const res1 = await fetch("https://shopnest-serveres.onrender.com/customer", {
+      const res1 = await fetch("https://shopnest-ecom.onrender.com
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -31,7 +31,7 @@ const CustomerList = () => {
 
       const customers = customerResponse.data; // based on your backend's shape
 
-      const res2 = await fetch("https://shopnest-serveres.onrender.com/profiledesign");
+      const res2 = await fetch("https://shopnest-ecom.onrender.com
       const profileData = await res2.json();
 
       const matchedUser = customers.find(

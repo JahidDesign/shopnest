@@ -12,7 +12,7 @@ import {
 import { AuthContext } from "../context/AuthContext";
 import { Helmet } from "react-helmet-async";
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || "https://shopnest-serveres.onrender.com";
+const API_URL = import.meta.env.VITE_BACKEND_URL || "https://shopnest-ecom.onrender.com"
 
 const Register = () => {
   const [formData, setFormData] = useState({

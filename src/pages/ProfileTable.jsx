@@ -14,7 +14,7 @@ const ProfileTableAPI = () => {
   // Fetch profiles from API
   const fetchProfiles = async () => {
     try {
-      const res = await fetch("https://shopnest-serveres.onrender.com/profiledesign");
+      const res = await fetch("https://shopnest-ecom.onrender.com
       if (!res.ok) throw new Error("Failed to fetch profiles");
       const data = await res.json();
       setProfiles(data);
@@ -32,7 +32,7 @@ const ProfileTableAPI = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this profile?")) return;
     try {
-      const res = await fetch(`https://shopnest-serveres.onrender.com/profiledesign/${id}`, {
+      const res = await fetch(`https://shopnestecom.onrender.comid}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Delete failed");

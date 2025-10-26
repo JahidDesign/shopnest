@@ -160,7 +160,7 @@ const PolicyManagementTable = () => {
   useEffect(() => {
     const fetchPolicies = async () => {
       try {
-        const res = await fetch("https://shopnest-serveres.onrender.com/policies");
+        const res = await fetch("https://shopnest-ecom.onrender.com
         const data = await res.json();
         setPolicies(data.data || []);
       } catch (err) {
@@ -179,7 +179,7 @@ const PolicyManagementTable = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this policy?")) {
       try {
-        await fetch(`https://shopnest-serveres.onrender.com/policies/${id}`, { method: "DELETE" });
+        await fetch(`https://shopnest-ecom.onrender.com { method: "DELETE" });
         setPolicies(policies.filter((p) => p._id !== id));
       } catch (err) {
         console.error(err);
@@ -190,7 +190,7 @@ const PolicyManagementTable = () => {
   const handleFormSubmit = async (data) => {
     if (editPolicy) {
       try {
-        await fetch(`https://shopnest-serveres.onrender.com/policies/${editPolicy._id}`, {
+        await fetch(`https://shopnestecom.onrender.comolicy._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
@@ -204,7 +204,7 @@ const PolicyManagementTable = () => {
       }
     } else {
       try {
-        const res = await fetch("https://shopnest-serveres.onrender.com/policies", {
+        const res = await fetch("https://shopnest-ecom.onrender.com
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),

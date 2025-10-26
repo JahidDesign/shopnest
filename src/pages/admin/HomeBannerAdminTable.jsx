@@ -1,256 +1,280 @@
+// src/components/HomeBannerAdminTable.jsx
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+
+const API_URL = "https://shopnest-ecom.onrender.com/flashSales"; // Change to your API route
 
 const HomeBannerAdminTable = () => {
   const [banners, setBanners] = useState([]);
   const [editingBanner, setEditingBanner] = useState(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    subtitle: "",
+    imageUrl: "",
+    link: "",
+  });
 
-  // Fetch banners
+  const navigate = useNavigate();
+
+  // ---------------- FETCH BANNERS ----------------
   useEffect(() => {
-    fetch("https://shopnest-serveres.onrender.com/homebanners")
-      .then((res) => res.json())
-      .then((data) => setBanners(data))
-      .catch((err) => console.error("Error loading banners:", err));
+    fetchBanners();
   }, []);
 
-  // Handle Delete
-  const handleDelete = (id) => {
+  const fetchBanners = async () => {
+    try {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      setBanners(data);
+    } catch (error) {
+      console.error("Error fetching banners:", error);
+    }
+  };
+
+  // ---------------- HANDLE INPUT ----------------
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  // ---------------- ADD NEW BANNER ----------------
+  const handleAddBanner = async (e) => {
+    e.preventDefault();
+
+    if (!formData.title || !formData.imageUrl) {
+      Swal.fire("Error", "Title and Image URL are required!", "error");
+      return;
+    }
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        Swal.fire("Success!", "Banner added successfully!", "success");
+        setFormData({ title: "", subtitle: "", imageUrl: "", link: "" });
+        fetchBanners();
+      } else {
+        Swal.fire("Error", "Failed to add banner!", "error");
+      }
+    } catch (error) {
+      console.error("Error adding banner:", error);
+    }
+  };
+
+  // ---------------- EDIT BANNER ----------------
+  const handleEdit = (banner) => {
+    setEditingBanner(banner);
+    setFormData({
+      title: banner.title,
+      subtitle: banner.subtitle,
+      imageUrl: banner.imageUrl,
+      link: banner.link,
+    });
+  };
+
+  const handleUpdateBanner = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch(`${API_URL}/${editingBanner._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        Swal.fire("Updated!", "Banner updated successfully!", "success");
+        setEditingBanner(null);
+        setFormData({ title: "", subtitle: "", imageUrl: "", link: "" });
+        fetchBanners();
+      } else {
+        Swal.fire("Error", "Failed to update banner!", "error");
+      }
+    } catch (error) {
+      console.error("Error updating banner:", error);
+    }
+  };
+
+  // ---------------- DELETE BANNER ----------------
+  const handleDelete = async (id) => {
     Swal.fire({
       title: "Are you sure?",
-      text: "This banner will be deleted permanently!",
+      text: "This will permanently delete the banner.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#FF6600",
-      cancelButtonColor: "#aaa",
+      confirmButtonColor: "#e11d48",
+      cancelButtonColor: "#64748b",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        fetch(`https://shopnest-serveres.onrender.com/homebanners/${id}`, { method: "DELETE" })
-          .then(() => {
-            setBanners(banners.filter((b) => b.id !== id));
-            Swal.fire("Deleted!", "Banner removed successfully.", "success");
-          })
-          .catch(() =>
-            Swal.fire("Error", "Failed to delete banner.", "error")
-          );
+        try {
+          const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+          if (res.ok) {
+            Swal.fire("Deleted!", "Banner deleted successfully.", "success");
+            fetchBanners();
+          } else {
+            Swal.fire("Error", "Failed to delete banner.", "error");
+          }
+        } catch (error) {
+          console.error("Error deleting banner:", error);
+        }
       }
     });
   };
 
-  // Handle Edit Submit
-  const handleEditSubmit = (e) => {
-    e.preventDefault();
+  // ---------------- CANCEL EDIT ----------------
+  const handleCancelEdit = () => {
+    setEditingBanner(null);
+    setFormData({ title: "", subtitle: "", imageUrl: "", link: "" });
+  };
 
-    fetch(`https://shopnest-serveres.onrender.com/homebanners/${editingBanner.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(editingBanner),
-    })
-      .then((res) => res.json())
-      .then((updated) => {
-        setBanners(banners.map((b) => (b.id === updated.id ? updated : b)));
-        Swal.fire("Updated!", "Banner updated successfully!", "success");
-        setEditingBanner(null);
-      })
-      .catch(() =>
-        Swal.fire("Error", "Failed to update banner.", "error")
-      );
+  // ---------------- HANDLE LINK NAVIGATION ----------------
+  const handleLinkClick = (link) => {
+    if (!link) return;
+    if (link.startsWith("http")) {
+      // External link
+      window.open(link, "_blank", "noopener,noreferrer");
+    } else {
+      // Internal path
+      navigate(link);
+    }
   };
 
   return (
-    <div className="max-w-6xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-left text-orange-600 mb-6">
-        🧡 Manage Home Banners
-      </h2>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">🏠 Home Banner Management</h2>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full border border-gray-200 rounded-lg">
-          <thead className="bg-orange-500 text-white">
+      {/* ================= Add/Edit Banner Form ================= */}
+      <form
+        onSubmit={editingBanner ? handleUpdateBanner : handleAddBanner}
+        className="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-200"
+      >
+        <div className="grid md:grid-cols-2 gap-4">
+          <input
+            type="text"
+            name="title"
+            placeholder="Banner Title"
+            value={formData.title}
+            onChange={handleChange}
+            className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+          />
+          <input
+            type="text"
+            name="subtitle"
+            placeholder="Subtitle"
+            value={formData.subtitle}
+            onChange={handleChange}
+            className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+          />
+          <input
+            type="text"
+            name="imageUrl"
+            placeholder="Image URL"
+            value={formData.imageUrl}
+            onChange={handleChange}
+            className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+          />
+          <input
+            type="text"
+            name="link"
+            placeholder="Button Link (internal path or external URL)"
+            value={formData.link}
+            onChange={handleChange}
+            className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+          />
+        </div>
+
+        <div className="mt-4 flex gap-3">
+          <button
+            type="submit"
+            className={`px-6 py-2 rounded-lg text-white font-medium transition-all ${
+              editingBanner
+                ? "bg-blue-600 hover:bg-blue-700"
+                : "bg-green-600 hover:bg-green-700"
+            }`}
+          >
+            {editingBanner ? "Update Banner" : "Add Banner"}
+          </button>
+
+          {editingBanner && (
+            <button
+              type="button"
+              onClick={handleCancelEdit}
+              className="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
+      </form>
+
+      {/* ================= Banner Table ================= */}
+      <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-x-auto">
+        <table className="min-w-full text-sm text-gray-700">
+          <thead className="bg-gray-100 text-gray-800 uppercase text-xs font-semibold">
             <tr>
-              <th className="p-3 text-left">Image</th>
-              <th className="p-3 text-left">Title</th>
-              <th className="p-3 text-left">Subtitle</th>
-              <th className="p-3 text-left">Button</th>
-              <th className="p-3 text-center">Actions</th>
+              <th className="py-3 px-4 text-left">Image</th>
+              <th className="py-3 px-4 text-left">Title</th>
+              <th className="py-3 px-4 text-left">Subtitle</th>
+              <th className="py-3 px-4 text-left">Link</th>
+              <th className="py-3 px-4 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {banners.length === 0 ? (
-              <tr>
-                <td
-                  colSpan="5"
-                  className="text-center py-6 text-gray-500 italic"
-                >
-                  No banners found.
-                </td>
-              </tr>
-            ) : (
-              banners.map((b) => (
-                <tr
-                  key={b.id}
-                  className="border-b hover:bg-orange-50 transition"
-                >
-                  <td className="p-3">
+            {banners.length > 0 ? (
+              banners.map((banner) => (
+                <tr key={banner._id} className="border-b hover:bg-gray-50">
+                  <td className="py-3 px-4">
                     <img
-                      src={b.image}
-                      alt={b.title}
-                      className="w-20 h-12 object-cover rounded"
+                      src={banner.imageUrl}
+                      alt={banner.title}
+                      className="w-24 h-16 rounded-lg object-cover border"
                     />
                   </td>
-                  <td className="p-3 font-semibold text-gray-800">{b.title}</td>
-                  <td className="p-3 text-gray-600">{b.subtitle}</td>
-                  <td className="p-3">
-                    {b.buttonText ? (
-                      <a
-                        href={b.buttonLink}
-                        className="text-orange-600 hover:underline"
-                      >
-                        {b.buttonText}
-                      </a>
+                  <td className="py-3 px-4">{banner.title}</td>
+                  <td className="py-3 px-4">{banner.subtitle}</td>
+                  <td className="py-3 px-4 text-blue-600 underline cursor-pointer">
+                    {banner.link ? (
+                      <span onClick={() => handleLinkClick(banner.link)}>
+                        {banner.link}
+                      </span>
                     ) : (
                       "-"
                     )}
                   </td>
-                  <td className="p-3 text-center space-x-2">
+                  <td className="py-3 px-4 flex justify-center gap-3">
                     <button
-                      onClick={() => setEditingBanner(b)}
-                      className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition"
+                      onClick={() => handleEdit(banner)}
+                      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
                     >
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(b.id)}
-                      className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition"
+                      onClick={() => handleDelete(banner._id)}
+                      className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg"
                     >
                       Delete
                     </button>
                   </td>
                 </tr>
               ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center py-6 text-gray-500">
+                  No banners found.
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
       </div>
-
-      {/* Edit Modal */}
-      {editingBanner && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 backdrop-blur-sm transition-all">
-          <div className="bg-white p-6 rounded-lg w-96 shadow-lg scale-100 animate-fadeIn">
-            <h3 className="text-xl font-bold text-orange-600 mb-4">
-              ✏️ Edit Banner
-            </h3>
-
-            <form onSubmit={handleEditSubmit} className="space-y-3">
-              <div>
-                <label className="text-sm font-semibold text-gray-600 mb-1 block">
-                  Image URL
-                </label>
-                <input
-                  type="text"
-                  value={editingBanner.image}
-                  onChange={(e) =>
-                    setEditingBanner({
-                      ...editingBanner,
-                      image: e.target.value,
-                    })
-                  }
-                  placeholder="https://example.com/image.jpg"
-                  className="w-full border p-2 rounded focus:ring-2 focus:ring-orange-400"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600 mb-1 block">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  value={editingBanner.title}
-                  onChange={(e) =>
-                    setEditingBanner({
-                      ...editingBanner,
-                      title: e.target.value,
-                    })
-                  }
-                  placeholder="Enter banner title"
-                  className="w-full border p-2 rounded focus:ring-2 focus:ring-orange-400"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600 mb-1 block">
-                  Subtitle
-                </label>
-                <input
-                  type="text"
-                  value={editingBanner.subtitle}
-                  onChange={(e) =>
-                    setEditingBanner({
-                      ...editingBanner,
-                      subtitle: e.target.value,
-                    })
-                  }
-                  placeholder="Enter banner subtitle"
-                  className="w-full border p-2 rounded focus:ring-2 focus:ring-orange-400"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600 mb-1 block">
-                  Button Text
-                </label>
-                <input
-                  type="text"
-                  value={editingBanner.buttonText}
-                  onChange={(e) =>
-                    setEditingBanner({
-                      ...editingBanner,
-                      buttonText: e.target.value,
-                    })
-                  }
-                  placeholder="e.g., Shop Now"
-                  className="w-full border p-2 rounded focus:ring-2 focus:ring-orange-400"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600 mb-1 block">
-                  Button Link
-                </label>
-                <input
-                  type="text"
-                  value={editingBanner.buttonLink}
-                  onChange={(e) =>
-                    setEditingBanner({
-                      ...editingBanner,
-                      buttonLink: e.target.value,
-                    })
-                  }
-                  placeholder="/products"
-                  className="w-full border p-2 rounded focus:ring-2 focus:ring-orange-400"
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setEditingBanner(null)}
-                  className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-3 py-1 bg-orange-500 text-white rounded hover:bg-orange-600 transition"
-                >
-                  Save
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

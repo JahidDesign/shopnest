@@ -3,7 +3,7 @@ import React, { useEffect, useState, useContext } from "react";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../context/AuthContext";
 
-const API_URL = "https://shopnest-serveres.onrender.com/paymentsInsurance";
+const API_URL = "https://shopnestecom.onrender.come";
 const ADMIN_EMAIL = "jhadam904@gmail.com";
 
 const InsurancePaymentsTable = () => {

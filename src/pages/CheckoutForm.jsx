@@ -11,7 +11,7 @@ const CheckoutForm = () => {
     e.preventDefault();
     setProcessing(true);
 
-    const res = await fetch("https://shopnest-serveres.onrender.com/create-payment-intent", {
+    const res = await fetch("https://shopnestecom.onrender.comntent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount }),

@@ -1,5 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+
+// Example mock database for auto-fill
+const mockProducts = [
+  {
+    name: "Lipstick Rouge",
+    sku: "LIP123",
+    brand: "BeautyCo",
+    category: "Makeup",
+    subcategory: "Lips",
+    price: "1200",
+    stock: "50",
+    weight: "0.05",
+    dimensions: "5x2x1 cm",
+    description: "High-quality lipstick with smooth finish.",
+    images: [
+      "https://example.com/lip1.jpg",
+      "https://example.com/lip2.jpg"
+    ],
+    tags: ["lipstick", "beauty", "makeup"],
+    variants: [
+      { color: "Red", size: "Standard", price: "1200", stock: "20" },
+      { color: "Pink", size: "Standard", price: "1200", stock: "30" },
+    ],
+    metaTitle: "Lipstick Rouge - BeautyCo",
+    metaDescription: "Shop Lipstick Rouge by BeautyCo. Smooth and long-lasting.",
+    metaKeywords: "lipstick, rouge, beauty",
+    rating: 4
+  },
+  {
+    name: "Mascara Max",
+    sku: "MASC456",
+    brand: "Glamour",
+    category: "Makeup",
+    subcategory: "Eyes",
+    price: "950",
+    stock: "70",
+    weight: "0.07",
+    dimensions: "12x3x2 cm",
+    description: "Volumizing mascara for dramatic lashes.",
+    images: [
+      "https://example.com/mascara1.jpg",
+      "https://example.com/mascara2.jpg"
+    ],
+    tags: ["mascara", "eyes", "beauty"],
+    variants: [
+      { color: "Black", size: "Standard", price: "950", stock: "50" },
+      { color: "Brown", size: "Standard", price: "950", stock: "20" },
+    ],
+    metaTitle: "Mascara Max - Glamour",
+    metaDescription: "Glamour Mascara Max for full, voluminous lashes.",
+    metaKeywords: "mascara, eyes, glamour",
+    rating: 5
+  }
+];
 
 const MakeUpForm = () => {
   const [formData, setFormData] = useState({
@@ -26,7 +80,7 @@ const MakeUpForm = () => {
     metaDescription: "",
     metaKeywords: "",
     relatedProducts: [],
-    rating: 0, // <-- Star rating
+    rating: 0,
   });
 
   const [imageInput, setImageInput] = useState("");
@@ -34,30 +88,41 @@ const MakeUpForm = () => {
   const [variantInput, setVariantInput] = useState({ color: "", size: "", price: "", stock: "" });
   const [hoverRating, setHoverRating] = useState(0);
 
+  // Auto-fill when name changes
+  useEffect(() => {
+    const matched = mockProducts.find(p => p.name.toLowerCase() === formData.name.toLowerCase());
+    if (matched) {
+      setFormData(prev => ({
+        ...prev,
+        ...matched
+      }));
+    }
+  }, [formData.name]);
+
   // Handle input changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    setFormData(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
   };
 
   // Images
   const handleAddImage = () => {
     if (!imageInput.trim()) return;
-    setFormData((prev) => ({ ...prev, images: [...prev.images, imageInput] }));
+    setFormData(prev => ({ ...prev, images: [...prev.images, imageInput] }));
     setImageInput("");
   };
-  const handleRemoveImage = (idx) =>
-    setFormData((prev) => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }));
+  const handleRemoveImage = idx =>
+    setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }));
 
   // Tags
   const handleAddTag = () => {
     const tag = tagInput.trim();
     if (!tag || formData.tags.includes(tag)) return;
-    setFormData((prev) => ({ ...prev, tags: [...prev.tags, tag] }));
+    setFormData(prev => ({ ...prev, tags: [...prev.tags, tag] }));
     setTagInput("");
   };
-  const handleRemoveTag = (idx) =>
-    setFormData((prev) => ({ ...prev, tags: prev.tags.filter((_, i) => i !== idx) }));
+  const handleRemoveTag = idx =>
+    setFormData(prev => ({ ...prev, tags: prev.tags.filter((_, i) => i !== idx) }));
 
   // Variants
   const handleAddVariant = () => {
@@ -65,21 +130,21 @@ const MakeUpForm = () => {
       Swal.fire("Warning", "Fill all variant fields!", "warning");
       return;
     }
-    setFormData((prev) => ({ ...prev, variants: [...prev.variants, { ...variantInput }] }));
+    setFormData(prev => ({ ...prev, variants: [...prev.variants, { ...variantInput }] }));
     setVariantInput({ color: "", size: "", price: "", stock: "" });
   };
-  const handleRemoveVariant = (idx) =>
-    setFormData((prev) => ({ ...prev, variants: prev.variants.filter((_, i) => i !== idx) }));
+  const handleRemoveVariant = idx =>
+    setFormData(prev => ({ ...prev, variants: prev.variants.filter((_, i) => i !== idx) }));
 
   // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
     if (!formData.name || !formData.category || !formData.price || formData.images.length === 0) {
       Swal.fire("Missing Fields", "Please fill required fields and add at least one image.", "warning");
       return;
     }
+
     if (formData.hasDiscount) {
       if (!formData.discountPrice || parseFloat(formData.discountPrice) >= parseFloat(formData.price)) {
         Swal.fire("Invalid Discount", "Discount price must be less than regular price.", "warning");
@@ -88,7 +153,7 @@ const MakeUpForm = () => {
     }
 
     try {
-      const res = await fetch("https://shopnest-serveres.onrender.com/makeUp", {
+      const res = await fetch("https://shopnest-ecom.onrender.com/makeUp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -97,7 +162,6 @@ const MakeUpForm = () => {
 
       if (res.ok) {
         Swal.fire("Success", "Product added successfully!", "success");
-        // Reset form
         setFormData({
           name: "", sku: "", brand: "", category: "", subcategory: "", price: "",
           hasDiscount: false, discountPrice: "", discountStart: "", discountEnd: "",
@@ -129,10 +193,9 @@ const MakeUpForm = () => {
         <input type="text" name="brand" placeholder="Brand" value={formData.brand} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
         <select name="category" value={formData.category} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none">
           <option value="">Category *</option>
-          <option value="Electronics">Electronics</option>
-          <option value="Fashion">Fashion</option>
-          <option value="Home">Home & Garden</option>
-          <option value="Sports">Sports</option>
+          <option value="Makeup">Makeup</option>
+          <option value="Skincare">Skincare</option>
+          <option value="Fragrance">Fragrance</option>
         </select>
         <input type="text" name="subcategory" placeholder="Subcategory" value={formData.subcategory} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
         <input type="number" name="price" placeholder="Price (৳) *" value={formData.price} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>

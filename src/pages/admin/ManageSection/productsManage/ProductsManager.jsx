@@ -9,7 +9,7 @@ const ProductsTable = () => {
   // Fetch products
   const fetchProducts = async () => {
     try {
-      const res = await fetch("https://shopnest-serveres.onrender.com/products");
+      const res = await fetch("https://shopnest-ecom.onrender.com
       const data = await res.json();
       setProducts(data);
       setLoading(false);
@@ -32,7 +32,7 @@ const ProductsTable = () => {
     });
     if (confirm.isConfirmed) {
       try {
-        const res = await fetch(`https://shopnest-serveres.onrender.com/products/${id}`, {
+        const res = await fetch(`https://shopnest-ecom.onrender.com {
           method: "DELETE",
         });
         if (res.ok) {

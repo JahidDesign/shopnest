@@ -14,7 +14,7 @@ const MyPolicies = () => {
       if (!user?.email) return;
       try {
         setLoading(true);
-        const res = await fetch("https://shopnest-serveres.onrender.com/insuranceservicesBooking");
+        const res = await fetch("https://shopnestecom.onrender.comsBooking");
         if (!res.ok) throw new Error("Failed to fetch policies");
         const data = await res.json();
 

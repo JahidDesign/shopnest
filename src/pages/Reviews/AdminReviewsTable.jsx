@@ -1,8 +1,9 @@
-// File: AdminReviewsTable.jsx
+// File: src/components/AdminReviewsTable.jsx
 import React, { useState, useEffect } from "react";
 import { FaStar, FaEdit, FaTrash, FaEye } from "react-icons/fa";
+import Swal from "sweetalert2";
 
-const API_URL = "https://shopnest-serveres.onrender.com/users";
+const API_URL = "https://shopnest-ecom.onrender.com/users"; // Users endpoint
 
 const AdminReviewsTable = () => {
   const [reviews, setReviews] = useState([]);
@@ -17,7 +18,7 @@ const AdminReviewsTable = () => {
     social: { facebook: "", linkedin: "", twitter: "" },
   });
 
-  // Fetch reviews
+  // Fetch reviews from backend
   useEffect(() => {
     const fetchReviews = async () => {
       try {
@@ -54,19 +55,50 @@ const AdminReviewsTable = () => {
     setForm({ ...review, social: review.social || {} });
   };
 
-  const handleUpdate = () => {
-    setReviews((prev) =>
-      prev.map((r) =>
-        r._id === editingReview._id ? { ...editingReview, ...form } : r
-      )
-    );
-    setEditingReview(null);
+  const handleUpdate = async () => {
+    try {
+      const response = await fetch(`${API_URL}/${editingReview._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!response.ok) throw new Error("Failed to update review");
+
+      const updated = await response.json();
+      setReviews((prev) =>
+        prev.map((r) => (r._id === updated._id ? updated : r))
+      );
+      setEditingReview(null);
+      Swal.fire("Updated!", "Review has been updated.", "success");
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error", "Failed to update review.", "error");
+    }
   };
 
   // Delete
-  const handleDelete = (review) => {
-    if (window.confirm("Delete this review?")) {
-      setReviews((prev) => prev.filter((r) => r._id !== review._id));
+  const handleDelete = async (review) => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (confirm.isConfirmed) {
+      try {
+        const response = await fetch(`${API_URL}/${review._id}`, {
+          method: "DELETE",
+        });
+        if (!response.ok) throw new Error("Failed to delete review");
+
+        setReviews((prev) => prev.filter((r) => r._id !== review._id));
+        Swal.fire("Deleted!", "Review has been deleted.", "success");
+      } catch (error) {
+        console.error(error);
+        Swal.fire("Error", "Failed to delete review.", "error");
+      }
     }
   };
 

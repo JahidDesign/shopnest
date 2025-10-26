@@ -13,7 +13,7 @@ const ClaimRequest = () => {
 
   useEffect(() => {
     axios
-      .get(`https://shopnest-serveres.onrender.com/policies`)
+      .get(`https://shopnest-ecom.onrender.com
       .then((res) => {
         // Filter only approved or existing policies
         setPolicies(res.data.data);

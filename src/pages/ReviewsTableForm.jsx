@@ -17,7 +17,7 @@ const ReviewsTableForm = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch("https://shopnest-serveres.onrender.com/users");
+        const response = await fetch("https://shopnest-ecom.onrender.com
         const data = await response.json();
         setReviews(data);
       } catch (error) {
@@ -52,7 +52,7 @@ const ReviewsTableForm = () => {
     try {
       if (isEditing) {
         // Update existing review
-        const response = await fetch(`https://shopnest-serveres.onrender.com/users/${form.id}`, {
+        const response = await fetch(`https://shopnest-ecom.onrender.com`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(form),
@@ -64,7 +64,7 @@ const ReviewsTableForm = () => {
         setIsEditing(false);
       } else {
         // Create new review
-        const response = await fetch("https://shopnest-serveres.onrender.com/users", {
+        const response = await fetch("https://shopnest-ecom.onrender.com
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(form),
@@ -99,7 +99,7 @@ const ReviewsTableForm = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this review?")) return;
     try {
-      const response = await fetch(`https://shopnest-serveres.onrender.com/users/${id}`, {
+      const response = await fetch(`https://shopnest-ecom.onrender.com
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete review");

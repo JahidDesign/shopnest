@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 
 const CamerasForm = () => {
@@ -26,18 +26,51 @@ const CamerasForm = () => {
     metaDescription: "",
     metaKeywords: "",
     relatedProducts: [],
-    rating: 0, // <-- Star rating
+    rating: 0,
   });
 
+  const [allProducts, setAllProducts] = useState([]);
   const [imageInput, setImageInput] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [variantInput, setVariantInput] = useState({ color: "", size: "", price: "", stock: "" });
   const [hoverRating, setHoverRating] = useState(0);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Fetch all existing products for suggestions
+  useEffect(() => {
+    fetch("https://shopnest-ecom.onrender.com/cameras")
+      .then((res) => res.json())
+      .then((data) => setAllProducts(data))
+      .catch((err) => console.error(err));
+  }, []);
 
   // Handle input changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+
+    // Product name suggestions
+    if (name === "name") {
+      if (value.trim() === "") {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      } else {
+        const filtered = allProducts.filter((p) =>
+          p.name.toLowerCase().includes(value.toLowerCase())
+        );
+        setSuggestions(filtered);
+        setShowSuggestions(true);
+      }
+    }
+  };
+
+  // Select suggestion to auto-fill
+  const handleSelectSuggestion = (product) => {
+    setFormData({ ...product });
+    setHoverRating(product.rating || 0);
+    setSuggestions([]);
+    setShowSuggestions(false);
   };
 
   // Images
@@ -71,15 +104,15 @@ const CamerasForm = () => {
   const handleRemoveVariant = (idx) =>
     setFormData((prev) => ({ ...prev, variants: prev.variants.filter((_, i) => i !== idx) }));
 
-  // Submit form
+  // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
     if (!formData.name || !formData.category || !formData.price || formData.images.length === 0) {
       Swal.fire("Missing Fields", "Please fill required fields and add at least one image.", "warning");
       return;
     }
+
     if (formData.hasDiscount) {
       if (!formData.discountPrice || parseFloat(formData.discountPrice) >= parseFloat(formData.price)) {
         Swal.fire("Invalid Discount", "Discount price must be less than regular price.", "warning");
@@ -88,7 +121,7 @@ const CamerasForm = () => {
     }
 
     try {
-      const res = await fetch("https://shopnest-serveres.onrender.com/cameras", {
+      const res = await fetch("https://shopnest-ecom.onrender.com/cameras", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -97,7 +130,6 @@ const CamerasForm = () => {
 
       if (res.ok) {
         Swal.fire("Success", "Product added successfully!", "success");
-        // Reset form
         setFormData({
           name: "", sku: "", brand: "", category: "", subcategory: "", price: "",
           hasDiscount: false, discountPrice: "", discountStart: "", discountEnd: "",
@@ -109,6 +141,8 @@ const CamerasForm = () => {
         setTagInput("");
         setVariantInput({ color: "", size: "", price: "", stock: "" });
         setHoverRating(0);
+        setSuggestions([]);
+        setShowSuggestions(false);
       } else {
         Swal.fire("Error", data.error || "Failed to add product", "error");
       }
@@ -119,12 +153,37 @@ const CamerasForm = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto mt-8 bg-white shadow-lg p-6 rounded-lg">
+    <div className="max-w-7xl mx-auto mt-8 bg-white shadow-lg p-6 rounded-lg relative">
       <div className="text-2xl font-bold text-orange-600 mb-6 text-center">Cameras New Product</div>
       <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
+        
+        {/* Product Name with suggestions */}
+        <div className="relative md:col-span-2">
+          <input
+            type="text"
+            name="name"
+            placeholder="Product Name *"
+            value={formData.name}
+            onChange={handleChange}
+            className="border p-2 rounded w-full focus:ring-2 focus:ring-orange-500 outline-none"
+            autoComplete="off"
+          />
+          {showSuggestions && suggestions.length > 0 && (
+            <ul className="absolute bg-white border w-full mt-1 rounded max-h-40 overflow-y-auto z-10">
+              {suggestions.map((p, idx) => (
+                <li
+                  key={idx}
+                  className="p-2 hover:bg-orange-100 cursor-pointer"
+                  onClick={() => handleSelectSuggestion(p)}
+                >
+                  {p.name}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         {/* Product Info */}
-        <input type="text" name="name" placeholder="Product Name *" value={formData.name} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
         <input type="text" name="sku" placeholder="SKU / Code" value={formData.sku} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
         <input type="text" name="brand" placeholder="Brand" value={formData.brand} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none"/>
         <select name="category" value={formData.category} onChange={handleChange} className="border p-2 rounded focus:ring-2 focus:ring-orange-500 outline-none">

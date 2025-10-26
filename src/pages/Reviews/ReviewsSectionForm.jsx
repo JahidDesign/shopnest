@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { FaFacebookF, FaLinkedinIn, FaTwitter, FaStar } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 const ReviewsSectionForm = () => {
   const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [form, setForm] = useState({
     name: "",
     service: "",
@@ -11,22 +14,27 @@ const ReviewsSectionForm = () => {
     social: { facebook: "", linkedin: "", twitter: "" },
     image: "",
   });
+
   const [step, setStep] = useState(1);
   const [preview, setPreview] = useState(null);
 
+  // ✅ Fetch all reviews
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch("https://shopnest-serveres.onrender.com/users");
-        const data = await response.json();
-        setReviews(data);
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
+        const res = await fetch("https://shopnest-ecom.onrender.com/users");
+        const data = await res.json();
+        setReviews(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Error fetching reviews:", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchReviews();
   }, []);
 
+  // ✅ Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (["facebook", "linkedin", "twitter"].includes(name)) {
@@ -39,31 +47,35 @@ const ReviewsSectionForm = () => {
     }
   };
 
-  const handleRating = (rate) => setForm((prev) => ({ ...prev, rating: rate }));
+  // ✅ Handle star rating
+  const handleRating = (rating) =>
+    setForm((prev) => ({ ...prev, rating }));
 
+  // ✅ Next step (preview)
   const handleNextStep = (e) => {
     e.preventDefault();
     if (!form.name || !form.comment || !form.service || form.rating === 0) {
-      alert("Please fill all required fields and rating");
+      Swal.fire("Warning", "Please fill in all fields and select a rating.", "warning");
       return;
     }
     setPreview(form);
     setStep(2);
   };
 
+  // ✅ Submit review
   const handleSubmit = async () => {
     try {
-      const response = await fetch("https://shopnest-serveres.onrender.com/users", {
+      const res = await fetch("https://shopnest-ecom.onrender.com/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
 
-      if (!response.ok) throw new Error("Failed to submit review");
+      if (!res.ok) throw new Error("Failed to submit review");
+      const newReview = await res.json();
 
-      const newReview = await response.json();
+      Swal.fire("Success", "Your review has been submitted!", "success");
       setReviews([newReview, ...reviews]);
-
       setForm({
         name: "",
         service: "",
@@ -74,47 +86,49 @@ const ReviewsSectionForm = () => {
       });
       setStep(1);
       setPreview(null);
-    } catch (error) {
-      console.error("Error submitting review:", error);
-      alert("Failed to submit review. Please try again.");
+    } catch (err) {
+      console.error("Error:", err);
+      Swal.fire("Error", "Submission failed. Try again later.", "error");
     }
   };
 
   return (
-    <div>
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-[#FFDAB9] via-[#FF7F32] to-[#FF6600] text-white py-32 px-6 md:px-12 text-center">
+    <div className="font-sans">
+      {/* ✅ Hero Section */}
+      <section className="relative bg-gradient-to-r from-[#FFDAB9] via-[#FF7F32] to-[#FF6600] text-white py-28 px-6 md:px-12 text-center">
         <h1 className="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-lg">
-          Trusted Insurance Services
+          Shopnest Reviews
         </h1>
-        <p className="text-lg md:text-2xl max-w-3xl mx-auto">
-          Real feedback from clients who trust our services. Read their reviews or submit your own!
+        <p className="text-lg md:text-2xl max-w-3xl mx-auto opacity-90">
+          Hear from customers who trust Shopnest — share your experience today!
         </p>
       </section>
 
-      {/* Review Form Section */}
-      <section className="py-20 px-6 md:px-12 bg-[#FFDAB9]">
-        <div className="max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-lg mb-12 border-2 border-[#FF6600]">
-          {step === 1 && (
+      {/* ✅ Review Form Section */}
+      <section className="py-20 px-6 md:px-12 bg-[#FFDAB9] min-h-screen">
+        <div className="max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-xl mb-16 border-2 border-[#FF6600]">
+          {step === 1 ? (
             <>
-              <h3 className="text-2xl font-bold mb-6 text-[#CC5500]">Submit Your Review</h3>
-              <form onSubmit={handleNextStep} className="space-y-4">
+              <h3 className="text-2xl font-bold mb-6 text-[#CC5500]">
+                Write a Review
+              </h3>
+              <form onSubmit={handleNextStep} className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input
                     type="text"
                     name="name"
-                    placeholder="Your Name"
                     value={form.name}
                     onChange={handleChange}
+                    placeholder="Your Name"
                     className="w-full p-4 border-2 border-[#FF7F32] rounded-xl focus:border-[#FF6600] focus:outline-none"
                     required
                   />
                   <input
                     type="text"
                     name="service"
-                    placeholder="Service Name"
                     value={form.service}
                     onChange={handleChange}
+                    placeholder="Product / Service"
                     className="w-full p-4 border-2 border-[#FF7F32] rounded-xl focus:border-[#FF6600] focus:outline-none"
                     required
                   />
@@ -122,63 +136,52 @@ const ReviewsSectionForm = () => {
 
                 <textarea
                   name="comment"
-                  placeholder="Your Comment"
                   value={form.comment}
                   onChange={handleChange}
+                  placeholder="Write your review..."
                   className="w-full p-4 border-2 border-[#FF7F32] rounded-xl focus:border-[#FF6600] focus:outline-none resize-none"
                   rows={4}
                   required
                 ></textarea>
 
+                {/* Rating */}
                 <div className="flex items-center gap-2">
-                  <span className="text-[#CC5500]">Rating:</span>
+                  <span className="text-[#CC5500] font-semibold">Rating:</span>
                   {Array.from({ length: 5 }).map((_, i) => (
                     <FaStar
                       key={i}
-                      className={`cursor-pointer ${i < form.rating ? "text-[#FF6600]" : "text-[#FF7F32]"}`}
+                      className={`cursor-pointer text-2xl ${
+                        i < form.rating ? "text-[#FF6600]" : "text-[#FFB380]"
+                      }`}
                       onClick={() => handleRating(i + 1)}
                     />
                   ))}
                 </div>
 
+                {/* Social Links */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <input
-                    type="text"
-                    name="facebook"
-                    placeholder="Facebook URL"
-                    value={form.social.facebook}
-                    onChange={handleChange}
-                    className="w-full p-4 border-2 border-[#FF7F32] rounded-xl focus:border-[#FF6600] focus:outline-none"
-                  />
-                  <input
-                    type="text"
-                    name="linkedin"
-                    placeholder="LinkedIn URL"
-                    value={form.social.linkedin}
-                    onChange={handleChange}
-                    className="w-full p-4 border-2 border-[#FF7F32] rounded-xl focus:border-[#FF6600] focus:outline-none"
-                  />
-                  <input
-                    type="text"
-                    name="twitter"
-                    placeholder="Twitter URL"
-                    value={form.social.twitter}
-                    onChange={handleChange}
-                    className="w-full p-4 border-2 border-[#FF7F32] rounded-xl focus:border-[#FF6600] focus:outline-none"
-                  />
+                  {["facebook", "linkedin", "twitter"].map((platform) => (
+                    <input
+                      key={platform}
+                      type="text"
+                      name={platform}
+                      value={form.social[platform]}
+                      onChange={handleChange}
+                      placeholder={`${platform.charAt(0).toUpperCase() + platform.slice(1)} URL`}
+                      className="w-full p-4 border-2 border-[#FF7F32] rounded-xl focus:border-[#FF6600] focus:outline-none"
+                    />
+                  ))}
                 </div>
 
-                <div>
-                  <label className="block mb-2 text-[#CC5500]">Profile Image URL:</label>
-                  <input
-                    type="text"
-                    name="image"
-                    placeholder="Enter image URL"
-                    value={form.image}
-                    onChange={handleChange}
-                    className="w-full p-4 border-2 border-[#FF7F32] rounded-xl focus:border-[#FF6600] focus:outline-none"
-                  />
-                </div>
+                {/* Image */}
+                <input
+                  type="text"
+                  name="image"
+                  value={form.image}
+                  onChange={handleChange}
+                  placeholder="Profile Image URL"
+                  className="w-full p-4 border-2 border-[#FF7F32] rounded-xl focus:border-[#FF6600] focus:outline-none"
+                />
 
                 <button
                   type="submit"
@@ -188,22 +191,27 @@ const ReviewsSectionForm = () => {
                 </button>
               </form>
             </>
-          )}
-
-          {step === 2 && preview && (
+          ) : (
             <div className="text-center">
-              <h3 className="text-2xl font-bold mb-6 text-[#CC5500]">Confirm Your Review</h3>
+              <h3 className="text-2xl font-bold mb-6 text-[#CC5500]">
+                Confirm Your Review
+              </h3>
               <div className="bg-[#FF7F32]/20 p-6 rounded-xl mb-6 border-2 border-[#FF6600]">
                 <img
                   src={preview.image || "https://i.pravatar.cc/150?img=50"}
                   alt={preview.name}
-                  className="w-16 h-16 rounded-full mx-auto mb-4 border-2 border-[#FF6600]"
+                  className="w-20 h-20 rounded-full mx-auto mb-4 border-2 border-[#FF6600] object-cover"
                 />
-                <h4 className="font-bold text-[#CC5500]">{preview.name}</h4>
-                <p className="text-[#FF7F32] mb-2">{preview.service}</p>
-                <div className="flex justify-center items-center gap-1 mb-2">
+                <h4 className="font-bold text-[#CC5500] text-lg">
+                  {preview.name}
+                </h4>
+                <p className="text-[#FF7F32]">{preview.service}</p>
+                <div className="flex justify-center gap-1 my-2">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <FaStar key={i} className={i < preview.rating ? "text-[#FF6600]" : "text-[#FF7F32]"} />
+                    <FaStar
+                      key={i}
+                      className={i < preview.rating ? "text-[#FF6600]" : "text-[#FFB380]"}
+                    />
                   ))}
                 </div>
                 <p className="text-[#CC5500] italic">"{preview.comment}"</p>
@@ -211,13 +219,13 @@ const ReviewsSectionForm = () => {
               <div className="flex justify-center gap-4">
                 <button
                   onClick={() => setStep(1)}
-                  className="bg-[#FFDAB9] text-[#CC5500] py-2 px-6 rounded-xl hover:bg-[#FF7F32]"
+                  className="bg-[#FFDAB9] text-[#CC5500] py-2 px-6 rounded-xl hover:bg-[#FF7F32]/30 transition"
                 >
                   Edit
                 </button>
                 <button
                   onClick={handleSubmit}
-                  className="bg-[#FF6600] text-white py-2 px-6 rounded-xl hover:bg-[#FF7F32]"
+                  className="bg-[#FF6600] text-white py-2 px-6 rounded-xl hover:bg-[#FF7F32] transition"
                 >
                   Submit
                 </button>
@@ -226,44 +234,66 @@ const ReviewsSectionForm = () => {
           )}
         </div>
 
-        {/* Existing Reviews */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {reviews.map((review, index) => (
-            <div
-              key={index}
-              className="bg-[#FFDAB9]/80 p-6 rounded-3xl shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-2 border-2 border-[#FF6600]"
-            >
-              <div className="flex items-center gap-4 mb-4">
-                <img
-                  src={review.image || `https://i.pravatar.cc/150?img=${index + 10}`}
-                  alt={review.name || "User"}
-                  className="w-12 h-12 rounded-full object-cover border-2 border-[#FF6600]"
-                />
-                <div>
-                  <h3 className="font-bold text-[#CC5500]">{review.name || "Anonymous"}</h3>
-                  <p className="text-sm text-[#FF7F32]">{review.service || "Insurance Service"}</p>
+        {/* ✅ Existing Reviews */}
+        {loading ? (
+          <p className="text-center text-[#CC5500] text-lg">Loading reviews...</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {reviews.map((r, i) => (
+              <div
+                key={i}
+                className="bg-[#FFDAB9]/80 p-6 rounded-3xl shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-2 border-2 border-[#FF6600]"
+              >
+                <div className="flex items-center gap-4 mb-4">
+                  <img
+                    src={r.image || `https://i.pravatar.cc/150?img=${i + 20}`}
+                    alt={r.name}
+                    className="w-12 h-12 rounded-full border-2 border-[#FF6600] object-cover"
+                  />
+                  <div>
+                    <h3 className="font-bold text-[#CC5500]">{r.name}</h3>
+                    <p className="text-sm text-[#FF7F32]">{r.service}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1 mb-3">
+                  {Array.from({ length: 5 }).map((_, starIndex) => (
+                    <FaStar
+                      key={starIndex}
+                      className={
+                        starIndex < (r.rating || 0)
+                          ? "text-[#FF6600]"
+                          : "text-[#FFB380]"
+                      }
+                    />
+                  ))}
+                </div>
+
+                <p className="text-[#CC5500] italic">
+                  "{r.comment || "No comment provided."}"
+                </p>
+
+                <div className="flex gap-3 mt-4 text-[#FF7F32] text-lg">
+                  {r.social?.facebook && (
+                    <a href={r.social.facebook} target="_blank" rel="noreferrer">
+                      <FaFacebookF />
+                    </a>
+                  )}
+                  {r.social?.linkedin && (
+                    <a href={r.social.linkedin} target="_blank" rel="noreferrer">
+                      <FaLinkedinIn />
+                    </a>
+                  )}
+                  {r.social?.twitter && (
+                    <a href={r.social.twitter} target="_blank" rel="noreferrer">
+                      <FaTwitter />
+                    </a>
+                  )}
                 </div>
               </div>
-
-              <div className="flex items-center gap-2 mb-4">
-                {Array.from({ length: 5 }).map((_, starIndex) => (
-                  <FaStar
-                    key={starIndex}
-                    className={starIndex < (review.rating || 0) ? "text-[#FF6600]" : "text-[#FF7F32]"}
-                  />
-                ))}
-              </div>
-
-              <p className="text-[#CC5500] italic">"{review.comment || "No comment provided."}"</p>
-
-              <div className="flex gap-3 mt-4 text-[#FF7F32]">
-                {review.social?.facebook && <a href={review.social.facebook}><FaFacebookF /></a>}
-                {review.social?.linkedin && <a href={review.social.linkedin}><FaLinkedinIn /></a>}
-                {review.social?.twitter && <a href={review.social.twitter}><FaTwitter /></a>}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

@@ -12,7 +12,7 @@ import {
   Square,
 } from "lucide-react";
 
-const API_URL = "https://shopnest-serveres.onrender.com/contact";
+const API_URL = "https://shopnest-ecom.onrender.com/contact";
 
 // 🔸 Orange Color Palette
 const ORANGE_PALETTE = {

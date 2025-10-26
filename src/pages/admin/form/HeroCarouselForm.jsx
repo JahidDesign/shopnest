@@ -20,11 +20,13 @@ const HeroCarouselForm = ({ onAddSlide }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // ---------------- Handle Input Change ----------------
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // ---------------- Handle Submit ----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -33,8 +35,8 @@ const HeroCarouselForm = ({ onAddSlide }) => {
     if (!image || !title || !description) {
       Swal.fire({
         icon: "error",
-        title: "Oops...",
-        text: "Please fill all required fields!",
+        title: "Missing Fields",
+        text: "Please fill all required fields before submitting.",
       });
       return;
     }
@@ -42,26 +44,27 @@ const HeroCarouselForm = ({ onAddSlide }) => {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch("https://shopnest-serveres.onrender.com/heroCarousel", {
+      const res = await fetch("https://shopnest-ecom.onrender.com/sectionhero", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       if (!res.ok) throw new Error("Failed to add slide");
-
       const savedSlide = await res.json();
 
       Swal.fire({
         icon: "success",
         title: "Slide Added!",
-        text: `${title} has been added to the carousel.`,
+        text: `${title} has been added successfully.`,
         timer: 2000,
         showConfirmButton: false,
       });
 
+      // Pass to parent if needed
       onAddSlide?.(savedSlide);
 
+      // Reset form
       setFormData({
         image: "",
         title: "",
@@ -73,36 +76,41 @@ const HeroCarouselForm = ({ onAddSlide }) => {
       console.error(err);
       Swal.fire({
         icon: "error",
-        title: "Failed",
-        text: "Could not add slide. Please check backend and try again.",
+        title: "Error",
+        text: "Failed to add slide. Check your server connection.",
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // ---------------- Render Form ----------------
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Add Hero Slide</h2>
+    <div className="max-w-xl mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">
+        🖼️ Add Hero Carousel Slide
+      </h2>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Image URL */}
         <div>
-          <label className="block font-semibold mb-1">Image URL *</label>
+          <label className="block font-semibold mb-1 text-gray-700">
+            Image URL <span className="text-red-500">*</span>
+          </label>
           <input
             type="text"
             name="image"
             value={formData.image}
             onChange={handleChange}
             placeholder="https://example.com/image.jpg"
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none"
             required
           />
-          {/* Live preview */}
           {formData.image && (
             <img
               src={formData.image}
               alt="Preview"
-              className="mt-2 w-full h-48 object-cover rounded border"
+              className="mt-2 w-full h-48 object-cover rounded-lg border border-gray-300"
               onError={(e) => (e.target.style.display = "none")}
             />
           )}
@@ -110,27 +118,31 @@ const HeroCarouselForm = ({ onAddSlide }) => {
 
         {/* Title */}
         <div>
-          <label className="block font-semibold mb-1">Title *</label>
+          <label className="block font-semibold mb-1 text-gray-700">
+            Title <span className="text-red-500">*</span>
+          </label>
           <input
             type="text"
             name="title"
             value={formData.title}
             onChange={handleChange}
-            placeholder="Slide Title"
-            className="w-full border px-3 py-2 rounded"
+            placeholder="Enter slide title"
+            className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none"
             required
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="block font-semibold mb-1">Description *</label>
+          <label className="block font-semibold mb-1 text-gray-700">
+            Description <span className="text-red-500">*</span>
+          </label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Slide description"
-            className="w-full border px-3 py-2 rounded"
+            placeholder="Write a short description"
+            className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none"
             rows={3}
             required
           />
@@ -138,26 +150,30 @@ const HeroCarouselForm = ({ onAddSlide }) => {
 
         {/* Button Text */}
         <div>
-          <label className="block font-semibold mb-1">Button Text</label>
+          <label className="block font-semibold mb-1 text-gray-700">
+            Button Text
+          </label>
           <input
             type="text"
             name="buttonText"
             value={formData.buttonText}
             onChange={handleChange}
-            placeholder="Shop Now"
-            className="w-full border px-3 py-2 rounded"
+            placeholder="e.g. Shop Now"
+            className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none"
           />
         </div>
 
         {/* Color Shade */}
         <div>
-          <label className="block font-semibold mb-1">Color Shade</label>
-          <div className="flex items-center gap-2">
+          <label className="block font-semibold mb-1 text-gray-700">
+            Color Shade
+          </label>
+          <div className="flex items-center gap-3">
             <select
               name="colorHex"
               value={formData.colorHex}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="flex-1 border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none"
             >
               {colorOptions.map((color) => (
                 <option key={color.hex} value={color.hex}>
@@ -166,9 +182,9 @@ const HeroCarouselForm = ({ onAddSlide }) => {
               ))}
             </select>
             <div
-              className="w-8 h-8 rounded border"
+              className="w-8 h-8 rounded-lg border"
               style={{ backgroundColor: formData.colorHex }}
-            />
+            ></div>
           </div>
         </div>
 
@@ -176,10 +192,10 @@ const HeroCarouselForm = ({ onAddSlide }) => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`w-full py-2 px-4 text-white font-semibold rounded transition ${
+          className={`w-full py-2.5 font-semibold text-white rounded-lg transition ${
             isSubmitting
               ? "bg-gray-400 cursor-not-allowed"
-              : "bg-[#FF6600] hover:bg-orange-600"
+              : "bg-[#FF6600] hover:bg-[#e65c00]"
           }`}
         >
           {isSubmitting ? "Adding..." : "Add Slide"}

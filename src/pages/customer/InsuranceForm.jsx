@@ -33,7 +33,7 @@ export default function QuoteLifeInsuranceFrom() {
   // Confirm & upload to database
   const confirmSubmit = async () => {
     try {
-      await axios.post("https://shopnest-serveres.onrender.com/management", formData);
+      await axios.post("https://shopnestecom.onrender.commData);
 
       Swal.fire({
         icon: "success",

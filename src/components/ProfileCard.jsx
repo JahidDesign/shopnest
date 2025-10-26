@@ -22,7 +22,7 @@ const ProfileCard = () => {
     const fetchProfile = async () => {
       try {
         const res = await fetch(
-          `https://shopnest-serveres.onrender.com/profiledesign?userId=${user?.uid}`
+          `https://shopnestecom.onrender.comerId=${user?.uid}`
         );
         const data = await res.json();
         if (data && data.length > 0) {

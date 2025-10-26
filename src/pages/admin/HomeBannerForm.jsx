@@ -14,7 +14,7 @@ const HomeBannerForm = () => {
 
   // Load banners from local JSON API
   useEffect(() => {
-    fetch("https://shopnest-serveres.onrender.com/homebanners")
+    fetch("https://shopnest-ecom.onrender.com/flashSales")
       .then((res) => res.json())
       .then((data) => setBanners(data))
       .catch((err) => console.error("Error loading banners:", err));
@@ -35,7 +35,7 @@ const HomeBannerForm = () => {
       return;
     }
 
-    fetch("https://shopnest-serveres.onrender.com/homebanners", {
+    fetch("https://shopnest-ecom.onrender.com/flashSales", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
@@ -67,11 +67,12 @@ const HomeBannerForm = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`https://shopnest-serveres.onrender.com/homebanners/${id}`, { method: "DELETE" })
+        fetch(`https://shopnest-ecom.onrender.com/flashSales/${id}`, { method: "DELETE" })
           .then(() => {
             setBanners(banners.filter((b) => b.id !== id));
             Swal.fire("Deleted!", "Banner removed successfully.", "success");
-          });
+          })
+          .catch((err) => console.error("Error deleting banner:", err));
       }
     });
   };
@@ -79,7 +80,7 @@ const HomeBannerForm = () => {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <h2 className="text-3xl font-bold text-left text-orange-600 mb-8">
-        🧡 Manage Home Banners
+         Manage Home Banners
       </h2>
 
       {/* --- Banner Form --- */}

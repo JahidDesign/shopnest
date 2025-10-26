@@ -15,7 +15,7 @@ const AdminPaymentsTable = () => {
   // Fetch all payments
   const fetchPayments = async () => {
     try {
-      const { data } = await axios.get("https://shopnest-serveres.onrender.com/payments");
+      const { data } = await axios.get("http://localhost:3000
       setPayments(data);
     } catch (err) {
       console.error(err);

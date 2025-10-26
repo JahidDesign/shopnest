@@ -26,7 +26,7 @@ const PolicyApplicationForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("https://shopnest-serveres.onrender.com/policiesuser", formData);
+      await axios.post("https://shopnestecom.onrender.comormData);
       Swal.fire({
         icon: "success",
         title: "Policy Submitted",

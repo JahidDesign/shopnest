@@ -1,5 +1,5 @@
 // src/components/Newsletter.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Users, Mail, Sparkles } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import confetti from "canvas-confetti";
@@ -8,12 +8,15 @@ const Newsletter = () => {
   const [form, setForm] = useState({ name: "", email: "" });
   const [submitting, setSubmitting] = useState(false);
   const [subscriberCount, setSubscriberCount] = useState(0);
+  const [displayCount, setDisplayCount] = useState(0); // For animation
   const [existingEmails, setExistingEmails] = useState(new Set());
+  const rafRef = useRef(null);
 
+  // Fetch existing subscribers
   useEffect(() => {
     const fetchSubscribers = async () => {
       try {
-        const res = await fetch("https://shopnest-serveres.onrender.com/subscribers");
+        const res = await fetch("https://shopnest-ecom.onrender.com/subscribers");
         if (!res.ok) throw new Error("Failed to fetch subscribers");
         const data = await res.json();
         setSubscriberCount(data.length);
@@ -25,7 +28,32 @@ const Newsletter = () => {
     fetchSubscribers();
   }, []);
 
+  // Animate subscriber count
+  useEffect(() => {
+    let start = displayCount;
+    let end = subscriberCount;
+    let startTime = null;
+
+    const duration = 800; // in ms
+
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const current = Math.floor(start + (end - start) * progress);
+      setDisplayCount(current);
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [subscriberCount]);
+
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubmit = async (e) => {
@@ -38,7 +66,7 @@ const Newsletter = () => {
 
     try {
       setSubmitting(true);
-      const res = await fetch("https://shopnest-serveres.onrender.com/subscribers", {
+      const res = await fetch("https://shopnest-ecom.onrender.com/subscribers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, email: emailLower }),
@@ -46,8 +74,6 @@ const Newsletter = () => {
       if (!res.ok) throw new Error("Failed to subscribe");
 
       toast.success("🎉 Subscribed successfully!");
-
-      // Vivid Orange confetti burst
       confetti({
         particleCount: 150,
         spread: 100,
@@ -56,7 +82,7 @@ const Newsletter = () => {
       });
 
       setForm({ name: "", email: "" });
-      setSubscriberCount(prev => prev + 1);
+      setSubscriberCount(prev => prev + 1); // triggers animation
       setExistingEmails(prev => new Set(prev).add(emailLower));
     } catch (err) {
       console.error(err);
@@ -71,7 +97,7 @@ const Newsletter = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#FFDAB9]">
+    <div className="min-h-screen bg-[#FFDAB9] relative">
       <Toaster position="top-right" />
       <div className="max-w-6xl mx-auto py-20 px-6">
         {/* Hero Section */}
@@ -81,7 +107,7 @@ const Newsletter = () => {
             <div className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-gradient-to-br from-[#FF7F32] via-[#FFA500] to-[#FFDAB9] opacity-40 animate-pulse-slow"></div>
           </div>
 
-          {/* Floating gradient icons */}
+          {/* Floating icons */}
           <div className="absolute top-0 left-1/4" style={floatingAnimation("0s")}>
             <Mail className="w-6 h-6 text-transparent bg-clip-text bg-gradient-to-tr from-[#FF6600] via-[#FF7F32] to-[#FFA500] animate-glow" />
           </div>
@@ -104,7 +130,7 @@ const Newsletter = () => {
           <div className="flex items-center justify-center gap-8 text-sm text-gray-800 mb-8">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-[#FF6600] rounded-full animate-pulse"></div>
-              <span>{subscriberCount}+ subscribers</span>
+              <span>{displayCount}+ subscribers</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-[#FF7F32] rounded-full animate-pulse"></div>
@@ -163,23 +189,6 @@ const Newsletter = () => {
                 )}
               </button>
             </form>
-          </div>
-
-          {/* Features Section */}
-          <div className="grid md:grid-cols-3 gap-6 mt-12">
-            {[
-              { icon: Mail, title: "Weekly Newsletter", desc: "Curated content every week", colorFrom: "#FF6600", colorTo: "#FF7F32" },
-              { icon: Users, title: "Exclusive Community", desc: "Join our engaged readers", colorFrom: "#FF7F32", colorTo: "#FFA500" },
-              { icon: Sparkles, title: "Early Access", desc: "Be the first to know", colorFrom: "#FFA500", colorTo: "#FF6600" },
-            ].map((f, idx) => (
-              <div key={idx} className="text-center p-6">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 bg-gradient-to-r from-[${f.colorFrom}] to-[${f.colorTo}] animate-glow`}>
-                  <f.icon className="w-6 h-6 text-white" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">{f.title}</h4>
-                <p className="text-sm text-gray-600">{f.desc}</p>
-              </div>
-            ))}
           </div>
         </div>
       </div>

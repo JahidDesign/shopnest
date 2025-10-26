@@ -6,7 +6,7 @@ const AdminMakeUpTable = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = "https://shopnest-serveres.onrender.com/makeUp";
+  const API_URL = "https://shopnest-ecom.onrender.com/makeUp";
 
   // Fetch all products
   const fetchProducts = async () => {

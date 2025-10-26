@@ -8,7 +8,7 @@ const PolicyTable = () => {
 
   const fetchPolicies = async () => {
     try {
-      const res = await axios.get("https://shopnest-serveres.onrender.com/policiesuser");
+      const res = await axios.get("https://shopnest-ecom.onrender.com
       setPolicies(res.data);
     } catch (error) {
       console.error("Error fetching policies:", error);
@@ -32,7 +32,7 @@ const PolicyTable = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`https://shopnest-serveres.onrender.com/policiesuser/${id}`);
+        await axios.delete(`https://shopnestecom.onrender.comd}`);
         Swal.fire("Deleted!", "Policy has been deleted.", "success");
         fetchPolicies();
       } catch (error) {
@@ -44,7 +44,7 @@ const PolicyTable = () => {
 
   const handleStatusChange = async (id, status) => {
     try {
-      await axios.patch(`https://shopnest-serveres.onrender.com/policiesuser/${id}`, { status });
+      await axios.patch(`https://shopnestecom.onrender.comd}`, { status });
       Swal.fire("Updated!", `Policy status changed to ${status}`, "success");
       fetchPolicies();
     } catch (error) {
@@ -59,7 +59,7 @@ const PolicyTable = () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`https://shopnest-serveres.onrender.com/policiesuser/${editData._id}`, editData);
+      await axios.put(`https://shopnestecom.onrender.comditData._id}`, editData);
       Swal.fire("Success", "Policy updated successfully", "success");
       setEditData(null);
       fetchPolicies();

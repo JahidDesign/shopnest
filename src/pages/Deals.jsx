@@ -1,6 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-
+import ToursGrid  from "./products/ToursGrid"
 const Deals = () => {
   return (
     <>
@@ -25,9 +25,8 @@ const Deals = () => {
         <meta name="twitter:image" content="/og-deals.jpg" />
       </Helmet>
 
-      <div className="max-w-7xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-6">Hot Deals</h1>
-        {/* Render deals list here */}
+      <div className="max-w-full mx-auto p-6">
+       <ToursGrid/>
       </div>
     </>
   );

@@ -39,7 +39,7 @@ const MeetOurTeamDemo = () => {
 
   useEffect(() => {
     axios
-      .get("https://shopnest-serveres.onrender.com/customer")
+      .get("https://shopnest-ecom.onrender.com
       .then((res) => {
         const data = res.data;
 

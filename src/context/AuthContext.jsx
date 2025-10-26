@@ -1,3 +1,4 @@
+// File: src/context/AuthContext.jsx
 import React, { createContext, useState, useEffect, useCallback } from "react";
 import {
   onAuthStateChanged,
@@ -15,6 +16,7 @@ import toast from "react-hot-toast";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  // Initial states from localStorage
   const [user, setUser] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("user")) || null;
@@ -22,18 +24,17 @@ export const AuthProvider = ({ children }) => {
       return null;
     }
   });
-
   const [token, setToken] = useState(localStorage.getItem("authToken") || null);
   const [loading, setLoading] = useState(true);
 
-  const API_URL =
-    import.meta.env.VITE_BACKEND_URL || "https://shopnest-serveres.onrender.com";
+  const API_URL = import.meta.env.VITE_BACKEND_URL || "https://shopnest-ecom.onrender.com";
   const MAIN_ADMIN_EMAIL = "admin@shopnest.com";
 
-  // Sync localStorage when user or token changes
+  // Persist user & token in localStorage
   useEffect(() => {
     if (user) localStorage.setItem("user", JSON.stringify(user));
     else localStorage.removeItem("user");
+
     if (token) localStorage.setItem("authToken", token);
     else localStorage.removeItem("authToken");
   }, [user, token]);
@@ -42,26 +43,51 @@ export const AuthProvider = ({ children }) => {
   const syncWithBackend = useCallback(
     async (firebaseUser) => {
       if (!firebaseUser) return;
+
       try {
         const idToken = await getIdToken(firebaseUser, true);
+
+        // Attempt backend login
         const res = await fetch(`${API_URL}/customer/firebase-login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ idToken }),
         });
-        if (!res.ok) throw new Error("Backend login failed");
+
+        if (!res.ok) {
+          // Backend route not found or error → fallback
+          console.warn("⚠️ Backend login failed, using local fallback");
+          const fallbackUser = {
+            uid: firebaseUser.uid,
+            displayName: firebaseUser.displayName,
+            email: firebaseUser.email,
+            role: firebaseUser.email === MAIN_ADMIN_EMAIL ? "admin" : "customer",
+          };
+          setUser(fallbackUser);
+          setToken("FAKE_TOKEN");
+          return;
+        }
 
         const data = await res.json();
         let updatedUser = data.user;
 
         // Assign roles
-        if (updatedUser?.email === MAIN_ADMIN_EMAIL) updatedUser.role = "admin";
-        else updatedUser.role = "customer";
+        updatedUser.role = updatedUser?.email === MAIN_ADMIN_EMAIL ? "admin" : "customer";
 
         setUser(updatedUser);
         setToken(data.token);
       } catch (err) {
         console.error("❌ Backend sync error:", err);
+
+        // Fallback if backend fails
+        const fallbackUser = {
+          uid: firebaseUser.uid,
+          displayName: firebaseUser.displayName,
+          email: firebaseUser.email,
+          role: firebaseUser.email === MAIN_ADMIN_EMAIL ? "admin" : "customer",
+        };
+        setUser(fallbackUser);
+        setToken("FAKE_TOKEN");
       } finally {
         setLoading(false);
       }
@@ -69,7 +95,7 @@ export const AuthProvider = ({ children }) => {
     [API_URL]
   );
 
-  // Listen for Firebase Auth changes
+  // Listen for Firebase Auth state changes
   useEffect(() => {
     setPersistence(auth, browserLocalPersistence).then(() => {
       const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -80,7 +106,7 @@ export const AuthProvider = ({ children }) => {
     });
   }, [syncWithBackend]);
 
-  // Google Login
+  // Google login
   const loginWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -93,12 +119,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Manual Login (email/password)
+  // Manual login (email/password) or backend JWT
   const login = (userData, jwtToken) => {
-    if (userData?.email === MAIN_ADMIN_EMAIL) userData.role = "admin";
-    else userData.role = "customer";
+    const updatedUser = { ...userData };
+    updatedUser.role = updatedUser?.email === MAIN_ADMIN_EMAIL ? "admin" : "customer";
 
-    setUser(userData);
+    setUser(updatedUser);
     setToken(jwtToken);
   };
 

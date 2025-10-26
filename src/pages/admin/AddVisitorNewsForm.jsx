@@ -20,7 +20,7 @@ const AddVisitorForm = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch("https://shopnest-serveres.onrender.com/visitors", {
+      const response = await fetch("https://shopnest-ecom.onrender.com
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

@@ -1,24 +1,24 @@
-import { useLocation } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import AppRoutes from './Routes/Routes';
+import { useLocation, matchPath } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import AppRoutes from "./Routes/Routes";
 
 function Layout() {
   const location = useLocation();
 
-  // Pages where Navbar and Footer should be hidden
-  const hideLayout = [
-    '/login',
-    '/register',
-    '/404',
-    '/admin',
-    '/customer',
-    '/agent'
+  // Paths where Navbar/Footer should be hidden
+  const hideLayoutPaths = [
+    "/login",
+    "/register",
+    "/unauthorized",
+    "/admin/*",
+    "/dashboard/*",
+    "/agent/*",
   ];
 
-  // Check if current path matches exactly OR starts with any hideLayout route
-  const shouldHide = hideLayout.some(route =>
-    location.pathname === route || location.pathname.startsWith(route)
+  // Determine if current path should hide Navbar/Footer
+  const shouldHide = hideLayoutPaths.some((path) =>
+    matchPath({ path, end: path.endsWith("/*") ? false : true }, location.pathname)
   );
 
   return (

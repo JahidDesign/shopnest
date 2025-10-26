@@ -6,7 +6,7 @@ const ToysTable = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = "https://shopnest-serveres.onrender.com/chilldsToy";
+  const API_URL = "https://shopnest-ecom.onrender.com/chilldsToy";
 
   // Fetch all products
   const fetchProducts = async () => {

@@ -10,7 +10,7 @@ const BlogManagementTable = () => {
   const fetchBlogs = async () => {
     try {
       setLoading(true);
-      const res = await fetch("https://shopnest-serveres.onrender.com/blogpost");
+      const res = await fetch("https://shopnest-ecom.onrender.com
       const data = await res.json();
       setBlogs(data);
     } catch (err) {
@@ -37,7 +37,7 @@ const BlogManagementTable = () => {
 
     if (confirm.isConfirmed) {
       try {
-        const res = await fetch(`https://shopnest-serveres.onrender.com/blogpost/${id}`, {
+        const res = await fetch(`https://shopnest-ecom.onrender.com {
           method: "DELETE",
         });
         const data = await res.json();
@@ -66,7 +66,8 @@ const BlogManagementTable = () => {
   // Save updated blog
   const handleUpdate = async (id, updatedBlog) => {
     try {
-      const res = await fetch(`https://shopnest-serveres.onrender.com/blogpost/${id}`, {
+      const res = await fetch(`https://shopnestecom.onrender.com
+ {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedBlog),

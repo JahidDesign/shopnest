@@ -5,7 +5,7 @@ import { AuthContext } from "../context/AuthContext";
 import { FiTrash2, FiEdit, FiChevronDown } from "react-icons/fi";
 
 // =================== Config ===================
-const API_BASE_URL = "https://shopnest-serveres.onrender.com"; 
+const API_BASE_URL = "https://shopnest-ecom.onrender.com";
 const AGENTS = ["a", "b", "c", "d", "e"];
 const ROLES = ["admin", "customer", ...AGENTS];
 const STATUSES = ["active", "inactive"];

@@ -1,6 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-
+import NewProductsGrid from "./products/NewProductsGrid";
 const NewArrivals = () => {
   return (
     <>
@@ -25,9 +25,8 @@ const NewArrivals = () => {
         <meta name="twitter:image" content="/og-new.jpg" />
       </Helmet>
 
-      <div className="max-w-7xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-6">New Arrivals</h1>
-        {/* Render new arrival products here */}
+      <div className="mx-auto p-6">
+       <NewProductsGrid/>
       </div>
     </>
   );

@@ -39,7 +39,7 @@ const ProfileModal = ({ userId, initialData, onClose, onSaved }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("https://shopnest-serveres.onrender.com/profiledesign", {
+      const res = await fetch("https://shopnest-ecom.onrender.com{
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, ...form }),

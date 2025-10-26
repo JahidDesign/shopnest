@@ -8,7 +8,7 @@ const VisitorNewsTable = () => {
 
   const fetchVisitors = async () => {
     try {
-      const res = await fetch("https://shopnest-serveres.onrender.com/visitors");
+      const res = await fetch("https://shopnest-ecom.onrender.com
       const data = await res.json();
       setVisitors(data);
     } catch (error) {
@@ -41,7 +41,7 @@ const VisitorNewsTable = () => {
           },
         });
 
-        const res = await fetch(`https://shopnest-serveres.onrender.com/visitors/${id}`, {
+        const res = await fetch(`https://shopnest-ecom.onrender.com {
           method: "DELETE",
         });
 
@@ -87,7 +87,7 @@ const VisitorNewsTable = () => {
         },
       });
 
-      const res = await fetch(`https://shopnest-serveres.onrender.com/visitors/${id}`, {
+      const res = await fetch(`https://shopnest-ecom.onrender.com {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editData),

@@ -151,7 +151,7 @@ const MakeUpProducts = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("https://shopnest-serveres.onrender.com/chilldsToy");
+        const res = await fetch("https://shopnest-ecom.onrender.com/childToy");
         const data = await res.json();
         setProducts(data);
       } catch (err) {

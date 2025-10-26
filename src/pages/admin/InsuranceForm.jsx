@@ -55,7 +55,7 @@ const InsuranceForm = () => {
     };
 
     try {
-      await axios.post('https://shopnest-serveres.onrender.com/management', payload);
+      await axios.post('https://shopnestecom.onrender.comload);
       Swal.fire({
         icon: 'success',
         title: 'Application Submitted!',

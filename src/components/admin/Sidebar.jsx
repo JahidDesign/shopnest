@@ -33,10 +33,10 @@ const Sidebar = () => {
   };
 
   const navLinks = useMemo(() => [
-    {
+{
       name: "Dashboard",
       path: "/admin",
-      icon: FaHome,
+      ic    on: FaHome,
       color: "from-[#FF6600] to-[#FFA500]",
       subLinks: [],
       roles: ["admin", "agent"],
@@ -86,7 +86,7 @@ const Sidebar = () => {
       roles: ["admin"],
     },
     {
-      name: "Manage Users",
+      name: "Fashion Sunglass",
       path: "/admin/manage-users",
       icon: FaUsers,
       color: "from-[#FF6600] to-[#FFA500]",

@@ -6,7 +6,7 @@ const CamerasTable = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = "https://shopnest-serveres.onrender.com/cameras";
+  const API_URL = "https://shopnest-ecom.onrender.com/cameras";
 
   // Fetch all products
   const fetchProducts = async () => {

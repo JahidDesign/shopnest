@@ -27,7 +27,7 @@ const CheckoutForm = () => {
   useEffect(() => {
     const fetchPolicies = async () => {
       try {
-        const { data } = await axios.get("https://shopnest-serveres.onrender.com/policies");
+        const { data } = await axios.get("https://shopnest-ecom.onrender.com
         setPolicies(data.data || []);
       } catch (err) {
         console.error("Failed to fetch policies", err);
@@ -64,7 +64,7 @@ const CheckoutForm = () => {
     try {
       // 1. Create payment intent on backend
       const { data: clientSecretRes } = await axios.post(
-        "https://shopnest-serveres.onrender.com/payments",
+        "https://shopnest-ecom.onrender.com
         {
           policyId: selectedPolicy?._id || null,
           title: selectedPolicy?.title || cardData.policyTitle || "Custom Payment",

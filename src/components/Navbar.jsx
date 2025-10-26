@@ -13,12 +13,12 @@ const navConfig = {
       url: "/shop",
       dropdown: true,
       items: [
-        { name: "Men's Fashion", url: "/category/men", icon: "👔" },
-        { name: "Women's Fashion", url: "/category/women", icon: "👗" },
-        { name: "Electronics", url: "/category/electronics", icon: "📱" },
-        { name: "Home & Living", url: "/category/home-living", icon: "🏠" },
-        { name: "Beauty & Care", url: "/category/beauty", icon: "💄" },
-        { name: "Sports & Outdoor", url: "/category/sports", icon: "⚽" },
+        { name: "Men's Fashion", url: "/category/men" },
+        { name: "Women's Fashion", url: "/category/women"},
+        { name: "Electronics", url: "/category/electronics" },
+        { name: "Home & Living", url: "/category/home-living" },
+        { name: "Beauty & Care", url: "/category/beauty" },
+        { name: "Sports & Outdoor", url: "/category/sports" },
       ],
     },
     { name: "Deals", url: "/deals", badge: "Hot" },
@@ -284,12 +284,12 @@ const Navbar = () => {
                         </Link>
 
                         <Link
-                          to="/orders"
+                          to="/dashboard"
                           onClick={() => setUserDropdownOpen(false)}
                           className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-all duration-200 group"
                         >
                           <Package className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-                          <span className="text-sm font-medium">My Orders</span>
+                          <span className="text-sm font-medium">Dashboard</span>
                         </Link>
 
                         <div className="my-2 border-t border-gray-100"></div>
@@ -340,7 +340,7 @@ const Navbar = () => {
             <div className="flex flex-col h-full">
               {/* Mobile Menu Header */}
               <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                <img src={navConfig.logo.image} alt={navConfig.logo.text} className="w-32 h-auto object-contain" />
+                <img src="shopNest.svg" alt="shopNest" className="w-32 h-auto object-contain" />
                 <button
                   onClick={() => setSideMenuOpen(false)}
                   className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
@@ -450,12 +450,12 @@ const Navbar = () => {
                         <span className="text-sm font-medium">My Profile</span>
                       </Link>
                       <Link
-                        to="/orders"
+                        to="/dashboard"
                         onClick={() => setSideMenuOpen(false)}
                         className="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-orange-50 hover:text-orange-600 transition-all duration-200"
                       >
                         <Package className="w-4 h-4" />
-                        <span className="text-sm font-medium">My Orders</span>
+                        <span className="text-sm font-medium">Dashboard</span>
                       </Link>
                     </>
                   )}

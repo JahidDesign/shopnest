@@ -49,7 +49,7 @@ const BlogDetail = () => {
     const fetchBlog = async () => {
       try {
         setLoading(true);
-        const res = await fetch("https://shopnest-serveres.onrender.com/blogpost");
+        const res = await fetch("https://shopnest-ecom.onrender.com
         if (!res.ok) throw new Error("Failed to fetch blogs");
         const data = await res.json();
         const foundBlog = data.find((b) => b._id === blogId);
@@ -62,7 +62,7 @@ const BlogDetail = () => {
 
         // Increment views
         await fetch(
-          `https://shopnest-serveres.onrender.com/blogpost/${blogId}/views`,
+          `https://shopnestecom.onrender.comd}/views`,
           {
             method: "PATCH",
           }
@@ -147,7 +147,7 @@ const BlogDetail = () => {
 
     try {
       const res = await fetch(
-        "https://shopnest-serveres.onrender.com/insuranceservicesBooking",
+        "https://shopnestecom.onrender.comsBooking",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

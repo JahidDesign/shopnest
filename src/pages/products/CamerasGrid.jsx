@@ -151,7 +151,7 @@ const CamerasProducts = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("https://shopnest-serveres.onrender.com/cameras");
+        const res = await fetch("https://shopnest-ecom.onrender.com/cameras");
         const data = await res.json();
         setProducts(data);
       } catch (err) {

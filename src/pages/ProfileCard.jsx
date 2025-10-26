@@ -22,7 +22,7 @@ const ROLE_LABELS = {
   e: "Group E",
 };
 
-const API_BASE_URL = "https://shopnest-serveres.onrender.com";
+const API_BASE_URL = "https://shopnest-ecom.onrender.com";
 
 const ProfileLinkedIn = () => {
   const { user, logout } = useContext(AuthContext);

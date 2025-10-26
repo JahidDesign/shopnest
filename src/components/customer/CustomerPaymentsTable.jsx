@@ -13,7 +13,7 @@ const CustomerPaymentsTable = () => {
       try {
         setLoading(true);
         const res = await axios.get(
-          `https://shopnest-serveres.onrender.com/payments?email=${user.email}`
+          `https://shopnest-ecom.onrender.com{user.email}`
         );
         setPayments(res.data);
       } catch (err) {

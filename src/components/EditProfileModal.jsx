@@ -40,7 +40,7 @@ const ProfileModern = () => {
     const fetchProfile = async () => {
       try {
         const res = await axios.get(
-          `https://shopnest-serveres.onrender.com/profiledesign?email=${email}`
+          `https://shopnestecom.onrender.comail=${email}`
         );
         if (res.data && res.data.length > 0) {
           const p = res.data[0];
@@ -123,12 +123,12 @@ const ProfileModern = () => {
       if (profile?._id) {
         // update existing profile
         await axios.put(
-          `https://shopnest-serveres.onrender.com/profiledesign/${profile._id}`,
+          `https://shopnestecom.onrender.comprofile._id}`,
           updateData
         );
       } else {
         // create new profile
-        await axios.post(`https://shopnest-serveres.onrender.com/profiledesign`, updateData);
+        await axios.post(`https://shopnestecom.onrender.comupdateData);
       }
 
       alert("Profile saved successfully!");

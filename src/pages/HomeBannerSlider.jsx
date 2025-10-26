@@ -9,8 +9,9 @@ const HomeBannerSlider = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [direction, setDirection] = useState(0);
 
+  // Fetch banners
   useEffect(() => {
-    fetch("https://shopnest-serveres.onrender.com/homebanners")
+    fetch("https://shopnest-ecom.onrender.com/flashSales")
       .then((res) => res.json())
       .then((data) => {
         setBanners(data);
@@ -22,6 +23,7 @@ const HomeBannerSlider = () => {
       });
   }, []);
 
+  // Navigation callbacks
   const goToNext = useCallback(() => {
     setDirection(1);
     setCurrentIndex((prev) => (prev + 1) % banners.length);
@@ -32,17 +34,22 @@ const HomeBannerSlider = () => {
     setCurrentIndex((prev) => (prev - 1 + banners.length) % banners.length);
   }, [banners.length]);
 
-  const goToSlide = useCallback((index) => {
-    setDirection(index > currentIndex ? 1 : -1);
-    setCurrentIndex(index);
-  }, [currentIndex]);
+  const goToSlide = useCallback(
+    (index) => {
+      setDirection(index > currentIndex ? 1 : -1);
+      setCurrentIndex(index);
+    },
+    [currentIndex]
+  );
 
+  // Auto slide interval
   useEffect(() => {
     if (banners.length === 0 || isPaused) return;
     const interval = setInterval(goToNext, 5000);
     return () => clearInterval(interval);
   }, [banners.length, isPaused, goToNext]);
 
+  // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "ArrowLeft") goToPrev();
@@ -56,9 +63,10 @@ const HomeBannerSlider = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [goToNext, goToPrev]);
 
+  // Loading state
   if (isLoading) {
     return (
-      <div className="w-full h-96 md:h-[500px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center rounded-none overflow-hidden relative">
+      <div className="w-full h-96 md:h-[500px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center relative">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,102,0,0.1),transparent_50%)]"></div>
         <div className="text-center z-10">
           <div className="relative w-16 h-16 mx-auto mb-4">
@@ -71,9 +79,10 @@ const HomeBannerSlider = () => {
     );
   }
 
+  // Empty state
   if (banners.length === 0) {
     return (
-      <div className="w-full h-96 md:h-[500px] bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center rounded-none">
+      <div className="w-full h-96 md:h-[500px] bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
         <p className="text-white/50">No banners available</p>
       </div>
     );
@@ -87,11 +96,7 @@ const HomeBannerSlider = () => {
       opacity: 0,
       scale: 0.9,
     }),
-    center: {
-      x: 0,
-      opacity: 1,
-      scale: 1,
-    },
+    center: { x: 0, opacity: 1, scale: 1 },
     exit: (direction) => ({
       x: direction > 0 ? -1000 : 1000,
       opacity: 0,
@@ -100,8 +105,8 @@ const HomeBannerSlider = () => {
   };
 
   return (
-    <div 
-      className="relative w-full h-64 md:h-[500px] overflow-hidden rounded-none group bg-black"
+    <div
+      className="relative w-full h-64 md:h-[500px] overflow-hidden group bg-black"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       role="region"
@@ -126,7 +131,6 @@ const HomeBannerSlider = () => {
           }}
           className="absolute inset-0"
         >
-          {/* Image with Parallax Effect */}
           <motion.img
             src={current.image}
             alt={current.title}
@@ -135,12 +139,9 @@ const HomeBannerSlider = () => {
             animate={{ scale: 1 }}
             transition={{ duration: 5 }}
           />
-
-          {/* Modern Gradient Overlays */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
 
-          {/* Glassmorphism Content Card */}
           <div className="absolute inset-0 flex flex-col justify-center px-6 sm:px-12 md:px-16 lg:px-20">
             <motion.div
               initial={{ y: 40, opacity: 0 }}
@@ -148,7 +149,6 @@ const HomeBannerSlider = () => {
               transition={{ delay: 0.2, duration: 0.8 }}
               className="max-w-8xl"
             >
-              {/* Badge */}
               <motion.div
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -156,28 +156,28 @@ const HomeBannerSlider = () => {
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500/20 to-orange-600/20 backdrop-blur-md border border-orange-500/30 px-4 py-2 rounded-full mb-4"
               >
                 <Sparkles size={16} className="text-orange-400" />
-                <span className="text-orange-300 text-xs font-semibold uppercase tracking-wider">Featured</span>
+                <span className="text-orange-300 text-xs font-semibold uppercase tracking-wider">
+                  Featured
+                </span>
               </motion.div>
 
-              {/* Title */}
-              <motion.h2 
+              <motion.h2
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.8 }}
                 className="text-3xl sm:text-5xl md:text-6xl font-black text-white mb-4 leading-tight"
                 style={{
-                  textShadow: '0 4px 20px rgba(0,0,0,0.5)',
-                  background: 'linear-gradient(to right, #ffffff, #ffa500)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
+                  textShadow: "0 4px 20px rgba(0,0,0,0.5)",
+                  background: "linear-gradient(to right, #ffffff, #ffa500)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
                 }}
               >
                 {current.title}
               </motion.h2>
 
-              {/* Subtitle */}
-              <motion.p 
+              <motion.p
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.5, duration: 0.8 }}
@@ -186,7 +186,6 @@ const HomeBannerSlider = () => {
                 {current.subtitle}
               </motion.p>
 
-              {/* CTA Button */}
               {current.buttonText && (
                 <motion.a
                   initial={{ y: 20, opacity: 0 }}
@@ -198,8 +197,8 @@ const HomeBannerSlider = () => {
                   <span className="relative z-10">{current.buttonText}</span>
                   <motion.div
                     className="absolute inset-0 bg-white/20"
-                    initial={{ x: '-100%' }}
-                    whileHover={{ x: '100%' }}
+                    initial={{ x: "-100%" }}
+                    whileHover={{ x: "100%" }}
                     transition={{ duration: 0.5 }}
                   />
                   <ChevronRight size={20} className="relative z-10 group-hover/btn:translate-x-1 transition-transform" />
@@ -208,13 +207,11 @@ const HomeBannerSlider = () => {
             </motion.div>
           </div>
 
-          {/* Decorative Elements */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-orange-500/20 to-transparent rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-purple-500/10 to-transparent rounded-full blur-3xl"></div>
         </motion.div>
       </AnimatePresence>
 
-      {/* Futuristic Navigation Arrows */}
       {banners.length > 1 && (
         <>
           <motion.button
@@ -235,65 +232,56 @@ const HomeBannerSlider = () => {
           >
             <ChevronRight size={24} />
           </motion.button>
-        </>
-      )}
 
-      {/* Pause/Play Control */}
-      {banners.length > 1 && (
-        <motion.button
-          onClick={() => setIsPaused(!isPaused)}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="absolute top-6 right-6 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 text-white p-3 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg"
-          aria-label={isPaused ? "Resume autoplay" : "Pause autoplay"}
-        >
-          {isPaused ? <Play size={18} /> : <Pause size={18} />}
-        </motion.button>
-      )}
+          <motion.button
+            onClick={() => setIsPaused(!isPaused)}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="absolute top-6 right-6 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 text-white p-3 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg"
+            aria-label={isPaused ? "Resume autoplay" : "Pause autoplay"}
+          >
+            {isPaused ? <Play size={18} /> : <Pause size={18} />}
+          </motion.button>
 
-      {/* Modern Progress Bar Dots */}
-      {banners.length > 1 && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 bg-black/30 backdrop-blur-xl border border-white/10 px-4 py-3 rounded-full">
-          {banners.map((_, index) => (
-            <motion.button
-              key={index}
-              onClick={() => goToSlide(index)}
-              whileHover={{ scale: 1.2 }}
-              whileTap={{ scale: 0.9 }}
-              className="relative group/dot"
-              aria-label={`Go to banner ${index + 1}`}
-              aria-current={index === currentIndex ? "true" : "false"}
-            >
-              <div
-                className={`transition-all duration-500 rounded-full ${
-                  index === currentIndex
-                    ? "w-10 h-2 bg-gradient-to-r from-[#FF6600] to-[#FFA500]"
-                    : "w-2 h-2 bg-white/40 group-hover/dot:bg-white/60"
-                }`}
-              />
-              {index === currentIndex && (
-                <motion.div
-                  className="absolute inset-0 rounded-full bg-orange-400/50 blur-md"
-                  animate={{ scale: [1, 1.5, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 bg-black/30 backdrop-blur-xl border border-white/10 px-4 py-3 rounded-full">
+            {banners.map((_, index) => (
+              <motion.button
+                key={index}
+                onClick={() => goToSlide(index)}
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+                className="relative group/dot"
+                aria-label={`Go to banner ${index + 1}`}
+                aria-current={index === currentIndex ? "true" : "false"}
+              >
+                <div
+                  className={`transition-all duration-500 rounded-full ${
+                    index === currentIndex
+                      ? "w-10 h-2 bg-gradient-to-r from-[#FF6600] to-[#FFA500]"
+                      : "w-2 h-2 bg-white/40 group-hover/dot:bg-white/60"
+                  }`}
                 />
-              )}
-            </motion.button>
-          ))}
-        </div>
-      )}
+                {index === currentIndex && (
+                  <motion.div
+                    className="absolute inset-0 rounded-full bg-orange-400/50 blur-md"
+                    animate={{ scale: [1, 1.5, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                )}
+              </motion.button>
+            ))}
+          </div>
 
-      {/* Elegant Counter Badge */}
-      {banners.length > 1 && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute top-6 left-6 bg-black/30 backdrop-blur-xl border border-white/10 text-white px-4 py-2 rounded-full text-sm font-semibold tracking-wider"
-        >
-          <span className="text-orange-400">{String(currentIndex + 1).padStart(2, '0')}</span>
-          <span className="text-white/50 mx-1">/</span>
-          <span className="text-white/70">{String(banners.length).padStart(2, '0')}</span>
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute top-6 left-6 bg-black/30 backdrop-blur-xl border border-white/10 text-white px-4 py-2 rounded-full text-sm font-semibold tracking-wider"
+          >
+            <span className="text-orange-400">{String(currentIndex + 1).padStart(2, "0")}</span>
+            <span className="text-white/50 mx-1">/</span>
+            <span className="text-white/70">{String(banners.length).padStart(2, "0")}</span>
+          </motion.div>
+        </>
       )}
     </div>
   );

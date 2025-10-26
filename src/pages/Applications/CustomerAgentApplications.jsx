@@ -9,7 +9,7 @@ export default function CustomerAgentApplications() {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get("https://shopnest-serveres.onrender.com/management");
+      const res = await axios.get("https://shopnest-ecom.onrender.com
       // filter apps by email (customer/agent sees only theirs)
       const filtered = res.data.filter((app) => app.email === user?.email);
       setApplications(filtered);

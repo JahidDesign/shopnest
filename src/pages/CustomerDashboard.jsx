@@ -11,7 +11,7 @@ const Dashboard = () => {
       return;
     }
 
-    fetch("https://shopnest-serveres.onrender.com/customer/protected", {
+    fetch("https://shopnestecom.onrender.comed", {
       method: "GET",
   headers: {
     "Content-Type": "application/json",

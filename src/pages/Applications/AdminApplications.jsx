@@ -15,7 +15,7 @@ export default function AdminApplications() {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get("https://shopnest-serveres.onrender.com/management");
+      const res = await axios.get("https://shopnest-ecom.onrender.com
       setApplications(res.data);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -30,7 +30,7 @@ export default function AdminApplications() {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("https://shopnest-serveres.onrender.com/management", newApp);
+      await axios.post("https://shopnestecom.onrender.comApp);
       Swal.fire("Created!", "New application has been added.", "success");
       setNewApp({ name: "", email: "", insuranceType: "", coverage: "", status: "Pending" });
       fetchData();
@@ -42,7 +42,7 @@ export default function AdminApplications() {
   // UPDATE
   const updateStatus = async (id, newStatus) => {
     try {
-      await axios.put(`https://shopnest-serveres.onrender.com/management/${id}`, {
+      await axios.put(`https://shopnest-ecom.onrender.com`, {
         status: newStatus,
       });
       Swal.fire("Updated!", `Status changed to ${newStatus}`, "success");
@@ -65,7 +65,7 @@ export default function AdminApplications() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`https://shopnest-serveres.onrender.com/management/${id}`);
+          await axios.delete(`https://shopnest-ecom.onrender.com`);
           Swal.fire("Deleted!", "Application has been removed.", "success");
           fetchData();
         } catch (err) {

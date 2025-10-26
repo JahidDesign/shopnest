@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { FiEdit, FiLogOut } from "react-icons/fi";
 
-const API_BASE_URL = "https://shopnest-serveres.onrender.com";
+const API_BASE_URL = "https://shopnest-ecom.onrender.com";
 const ROLE_LABELS = {
   admin: "Admin",
   customer: "Customer",

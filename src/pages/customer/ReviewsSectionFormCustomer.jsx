@@ -18,7 +18,7 @@ const ReviewsSectionFormCustomer = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch("https://shopnest-serveres.onrender.com/users");
+        const response = await fetch("https://shopnest-ecom.onrender.com
         const data = await response.json();
         setReviews(data);
       } catch (error) {
@@ -58,7 +58,7 @@ const ReviewsSectionFormCustomer = () => {
   // Step 2 → Submit
   const handleSubmit = async () => {
     try {
-      const response = await fetch("https://shopnest-serveres.onrender.com/users", {
+      const response = await fetch("https://shopnest-ecom.onrender.com
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
