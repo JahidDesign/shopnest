@@ -3,11 +3,12 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = "https://shopnest-ecom.onrender.com/flashSales"; // Change to your API route
+const API_URL = "https://shopnest-ecom.onrender.com/carouselRoutes"; // your API route
 
 const HomeBannerAdminTable = () => {
   const [banners, setBanners] = useState([]);
   const [editingBanner, setEditingBanner] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     title: "",
     subtitle: "",
@@ -24,11 +25,15 @@ const HomeBannerAdminTable = () => {
 
   const fetchBanners = async () => {
     try {
+      setLoading(true);
       const res = await fetch(API_URL);
       const data = await res.json();
       setBanners(data);
     } catch (error) {
       console.error("Error fetching banners:", error);
+      Swal.fire("Error", "Failed to fetch banners.", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,8 +49,8 @@ const HomeBannerAdminTable = () => {
   const handleAddBanner = async (e) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.imageUrl) {
-      Swal.fire("Error", "Title and Image URL are required!", "error");
+    if (!formData.title.trim() || !formData.imageUrl.trim()) {
+      Swal.fire("Error", "Please provide a valid title and image URL.", "error");
       return;
     }
 
@@ -77,6 +82,7 @@ const HomeBannerAdminTable = () => {
       imageUrl: banner.imageUrl,
       link: banner.link,
     });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleUpdateBanner = async (e) => {
@@ -139,17 +145,17 @@ const HomeBannerAdminTable = () => {
   const handleLinkClick = (link) => {
     if (!link) return;
     if (link.startsWith("http")) {
-      // External link
       window.open(link, "_blank", "noopener,noreferrer");
     } else {
-      // Internal path
       navigate(link);
     }
   };
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">🏠 Home Banner Management</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">
+        🏠 Home Banner Management
+      </h2>
 
       {/* ================= Add/Edit Banner Form ================= */}
       <form
@@ -191,6 +197,18 @@ const HomeBannerAdminTable = () => {
           />
         </div>
 
+        {/* Live Image Preview */}
+        {formData.imageUrl && (
+          <div className="mt-4">
+            <p className="text-gray-600 text-sm mb-1">Image Preview:</p>
+            <img
+              src={formData.imageUrl}
+              alt="Preview"
+              className="w-60 h-32 object-cover rounded-lg border"
+            />
+          </div>
+        )}
+
         <div className="mt-4 flex gap-3">
           <button
             type="submit"
@@ -228,7 +246,16 @@ const HomeBannerAdminTable = () => {
             </tr>
           </thead>
           <tbody>
-            {banners.length > 0 ? (
+            {loading ? (
+              <tr>
+                <td
+                  colSpan="5"
+                  className="text-center py-6 text-gray-500 italic"
+                >
+                  Loading banners...
+                </td>
+              </tr>
+            ) : banners.length > 0 ? (
               banners.map((banner) => (
                 <tr key={banner._id} className="border-b hover:bg-gray-50">
                   <td className="py-3 px-4">

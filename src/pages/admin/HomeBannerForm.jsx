@@ -14,7 +14,7 @@ const HomeBannerForm = () => {
 
   // Load banners from local JSON API
   useEffect(() => {
-    fetch("https://shopnest-ecom.onrender.com/flashSales")
+    fetch("https://shopnest-ecom.onrender.com/carouselRoutes")
       .then((res) => res.json())
       .then((data) => setBanners(data))
       .catch((err) => console.error("Error loading banners:", err));
@@ -35,7 +35,7 @@ const HomeBannerForm = () => {
       return;
     }
 
-    fetch("https://shopnest-ecom.onrender.com/flashSales", {
+    fetch("https://shopnest-ecom.onrender.com/carouselRoutes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
@@ -67,7 +67,7 @@ const HomeBannerForm = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`https://shopnest-ecom.onrender.com/flashSales/${id}`, { method: "DELETE" })
+        fetch(`https://shopnest-ecom.onrender.com/carouselRoutes/${id}`, { method: "DELETE" })
           .then(() => {
             setBanners(banners.filter((b) => b.id !== id));
             Swal.fire("Deleted!", "Banner removed successfully.", "success");
